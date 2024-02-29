@@ -504,6 +504,9 @@ def get_features():
     response = query(url)
     return jsonify(response)
 
+@app.route('/', methods=['GET'])
+def get_root():
+    return jsonify({'data': 'Bienvenue!'})
 
 
 if __name__ == '__main__':
