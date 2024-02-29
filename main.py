@@ -3,16 +3,17 @@ import re
 import urllib.request
 from bs4 import BeautifulSoup
 import socket
+from flask import Flask, jsonify, request
+from flask_cors import CORS
 import requests
 import whois
 from serpapi import GoogleSearch
 from datetime import date, datetime
 import time
 from urllib.parse import urlparse
-from flask import Flask, jsonify, request
 
 app = Flask(__name__)
-
+CORS(app)
 class FeatureExtraction:
     features = []
 
@@ -499,7 +500,7 @@ def query(url):
     return obj.getFeaturesList()
 
 
-@app.route('/get-features', methods=['GET'])
+@app.route('/get-features', methods=['POST'])
 def get_features():
     url = request.form.get('url')
     response = query(url)
