@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 import socket
 import requests
 import whois
-from googlesearch.googlesearch import GoogleSearch
+from serpapi import GoogleSearch
 from datetime import date, datetime
 import time
 from urllib.parse import urlparse
@@ -444,8 +444,9 @@ class FeatureExtraction:
     # 28. GoogleIndex
     def GoogleIndex(self):
         try:
-            site = GoogleSearch.search(self.url, 5)
-            if site:
+            search = GoogleSearch({"q": self.url, "api_key": "56fb07c773fab28e5923e0bbba384c10eddb46845ba8ba03ddac177c49d66b19"})
+            site = search.get_dict()
+            if site['search_metadata']['status'] == "Success":
                 return 1
             else:
                 return -1
