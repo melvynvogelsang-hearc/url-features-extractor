@@ -10,9 +10,10 @@ from datetime import date, datetime
 import time
 from dateutil.parser import parse as date_parse
 from urllib.parse import urlparse
-
 from googlesearch import search
+from flask import Flask, jsonify, request
 
+app = Flask(__name__)
 
 class FeatureExtraction:
     features = []
@@ -493,10 +494,19 @@ class FeatureExtraction:
         return self.features
 
 
+
 def query(url):
     obj = FeatureExtraction(url)
     return obj.getFeaturesList()
 
-if __name__ == '__main__':
-    print(query('https://www.twitch.tv/emxxrrr'))
 
+@app.route('/get-features', methods=['GET'])
+def get_features():
+    url = request.form.get('url')
+    response = query(url)
+    return jsonify(response)
+
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
