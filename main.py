@@ -5,10 +5,10 @@ from bs4 import BeautifulSoup
 import socket
 import requests
 import whois
+from googlesearch.googlesearch import GoogleSearch
 from datetime import date, datetime
 import time
 from urllib.parse import urlparse
-from googlesearch import search
 from flask import Flask, jsonify, request
 
 app = Flask(__name__)
@@ -444,7 +444,7 @@ class FeatureExtraction:
     # 28. GoogleIndex
     def GoogleIndex(self):
         try:
-            site = search(self.url, 5)
+            site = GoogleSearch.search(self.url, 5)
             if site:
                 return 1
             else:
