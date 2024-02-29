@@ -4,11 +4,9 @@ import urllib.request
 from bs4 import BeautifulSoup
 import socket
 import requests
-import google
 import whois
 from datetime import date, datetime
 import time
-from dateutil.parser import parse as date_parse
 from urllib.parse import urlparse
 from googlesearch import search
 from flask import Flask, jsonify, request
