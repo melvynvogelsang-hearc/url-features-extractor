@@ -7,6 +7,8 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 import requests
 import json
+from urllib.parse import urlparse
+
 import whois
 from serpapi import GoogleSearch
 from datetime import date, datetime
@@ -41,7 +43,6 @@ class FeatureExtraction:
 
         try:
             self.whois_response = whois.whois(self.domain)
-            print(self.whois_response)
         except:
             pass
 
@@ -83,25 +84,25 @@ class FeatureExtraction:
         try:
             ipaddress.ip_address(self.url)
             value = -1
-            return {"feature": "UsingIp", "value": value}
+            return {"feature": "UsingIP", "value": value}
 
         except:
             value = 1
-            return {"feature": "UsingIp", "value": value}
+            return {"feature": "UsingIP", "value": value}
 
 
     # 2.longUrl
     def longUrl(self):
         if len(self.url) < 54:
             value = 1
-            return {"feature": "longUrl", "value": value}
+            return {"feature": "LongURL", "value": value}
 
         if len(self.url) >= 54 and len(self.url) <= 75:
             value = 0
-            return {"feature": "longUrl", "value": value}
+            return {"feature": "LongURL", "value": value}
 
         value = -1
-        return {"feature": "longUrl", "value": value}
+        return {"feature": "LongURL", "value": value}
 
     # 3.shortUrl
     def shortUrl(self):
@@ -115,28 +116,28 @@ class FeatureExtraction:
                           self.url)
         if match:
             value = -1
-            return {"feature": "shortUrl", "value": value}
+            return {"feature": "ShortURL", "value": value}
 
         value = 1
-        return {"feature": "shortUrl", "value": value}
+        return {"feature": "ShortURL", "value": value}
 
     # 4.Symbol@
     def symbol(self):
         if re.findall("@", self.url):
             value = -1
-            return {"feature": "symbol@", "value": value}
+            return {"feature": "Symbol@", "value": value}
 
         value = 1
-        return {"feature": "symbol@", "value": value}
+        return {"feature": "Symbol@", "value": value}
 
     # 5.Redirecting//
     def redirecting(self):
         if self.url.rfind('//') > 6:
             value = -1
-            return {"feature": "redirecting", "value": value}
+            return {"feature": "Redirecting//", "value": value}
 
         value = 1
-        return {"feature": "redirecting", "value": value}
+        return {"feature": "Redirecting//", "value": value}
 
     # 6.prefixSuffix
     def prefixSuffix(self):
@@ -144,14 +145,14 @@ class FeatureExtraction:
             match = re.findall('\-', self.domain)
             if match:
                 value = -1
-                return {"feature": "prefixSuffix", "value": value}
+                return {"feature": "PrefixSuffix-", "value": value}
 
             value = 1
-            return {"feature": "prefixSuffix", "value": value}
+            return {"feature": "PrefixSuffix-", "value": value}
 
         except:
             value = -1
-            return {"feature": "prefixSuffix", "value": value}
+            return {"feature": "PrefixSuffix-", "value": value}
 
 
     # 7.SubDomains
@@ -171,17 +172,17 @@ class FeatureExtraction:
     # 8.HTTPS
     def Https(self):
         try:
-            https = self.urlparse.scheme
-            if 'https' in https:
+            parsed_url = urlparse(self.url)
+            if 'https' in parsed_url.scheme:
                 value = 1
-                return {"feature": "Https", "value": value}
+                return {"feature": "HTTPS", "value": value}
 
             value = -1
-            return {"feature": "Https", "value": value}
+            return {"feature": "HTTPS", "value": value}
 
         except:
             value = 1
-            return {"feature": "Https", "value": value}
+            return {"feature": "HTTPS", "value": value}
 
     # 9.DomainRegLen
     def DomainRegLen(self):
@@ -246,7 +247,9 @@ class FeatureExtraction:
     # 12. HTTPSDomainURL
     def HTTPSDomainURL(self):
         try:
-            if 'https' in self.domain:
+            parsed_url = urlparse(self.url)
+
+            if 'https' in parsed_url.scheme:
                 value = -1
                 return {"feature": "HTTPSDomainURL", "value": value}
 
@@ -414,7 +417,7 @@ class FeatureExtraction:
     # 18. AbnormalURL
     def AbnormalURL(self):
         try:
-            if self.response.text == self.whois_response:
+            if self.whois_response.domain_name.lower() in self.url.lower():
                 value = 1
                 return {"feature": "AbnormalURL", "value": value}
             else:
@@ -476,6 +479,7 @@ class FeatureExtraction:
 
     # 22. UsingPopupWindow
     def UsingPopupWindow(self):
+        print(self.response.text)
         try:
             if re.findall(r"alert\(", self.response.text):
                 value = 1
@@ -514,7 +518,6 @@ class FeatureExtraction:
 
             today = date.today()
             age = (today.year - creation_date.year) * 12 + (today.month - creation_date.month)
-            print(age)
             # Plus grand que 6 mois
             if age >= 6:
                 value = 1
@@ -640,7 +643,7 @@ class FeatureExtraction:
 
     def getFeaturesList(self):
         features = {}
-        features_to_drop = ['WebsiteTraffic', "GoogleIndex", "PageRank"]
+        features_to_drop = ['WebsiteTraffic', "GoogleIndex", "PageRank", "HTTPS", "AnchorURL"]
         for f in self.features:
             if f['feature'] not in features_to_drop:
                 features[f['feature']] = f['value']
