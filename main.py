@@ -263,6 +263,8 @@ class FeatureExtraction:
     # 13. RequestURL
     def RequestURL(self):
         try:
+            #correction variable non assignée
+            i = 0
             for img in self.soup.find_all('img', src=True):
                 dots = [x.start(0) for x in re.finditer('\.', img['src'])]
                 if self.url in img['src'] or self.domain in img['src'] or len(dots) == 1:
@@ -288,7 +290,11 @@ class FeatureExtraction:
                 i = i + 1
 
             try:
-                percentage = success / float(i) * 100
+                if i != 0:
+                    percentage = success / float(i) * 100
+                else:
+                    percentage = 0
+
                 if percentage < 22.0:
                     value = 1
                     return {"feature": "RequestURL", "value": value, "reason": str(percentage) + "% des médias contienent l'URL."}
@@ -301,8 +307,9 @@ class FeatureExtraction:
                     value = -1
                     return {"feature": "RequestURL", "value": value, "reason": str(percentage) + "% des médias contienent l'URL."}
 
-            except:
+            except Exception as e:
                 value = 0
+                print(e)
                 return {"feature": "RequestURL", "value": value, "reason": "Exception"}
 
         except:
@@ -354,7 +361,11 @@ class FeatureExtraction:
                 i = i + 1
 
             try:
-                percentage = success / float(i) * 100
+                if i != 0:
+                    percentage = success / float(i) * 100
+                else:
+                    percentage = 0
+
                 if percentage < 17.0:
                     value = 1
                     return {"feature": "LinksInScriptTags", "value": value, "reason": str(percentage) + "% des liens dans script et link contiennent l'URL."}
@@ -366,12 +377,14 @@ class FeatureExtraction:
                     value = -1
                     return {"feature": "LinksInScriptTags", "value": value, "reason": str(percentage) + "% des liens dans script et link contiennent l'URL."}
 
-            except:
+            except Exception as e:
                 value = 0
+                print(e)
                 return {"feature": "LinksInScriptTags", "value": value, "reason": "Exception"}
 
-        except:
+        except Exception as e:
             value = -1
+            print(e)
             return {"feature": "LinksInScriptTags", "value": value, "reason": "Exception"}
 
     # 16. ServerFormHandler
@@ -402,7 +415,8 @@ class FeatureExtraction:
     # 17. InfoEmail
     def InfoEmail(self):
         try:
-            if re.findall(r"[mail\(\)|mailto:?]", self.soap):
+            # Correction de l'expression régulière
+            if re.findall(r"mail\(\)|mailto:[\w\.-]+@[\w\.-]+\.\w+(?:\?\w+=\w+(&\w+=\w+)*)?", self.response.text):
                 value = -1
                 return {"feature": "InfoEmail", "value": value, "reason": "Mailto trouvé dans la page."}
 
@@ -646,7 +660,7 @@ class FeatureExtraction:
                 return {"feature": "StatsReport", "value": value, "reason": "Adresse IP du site suspicieuse."}
             else:
                 value = 1
-                return {"feature": "StatsReport", "value": value, "reason": "No reason"}
+                return {"feature": "StatsReport", "value": value, "reason": "L'adresse IP et l'URL sont corrects."}
 
         except:
             value = 1

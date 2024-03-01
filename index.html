@@ -93,10 +93,15 @@
                             </h3>
                             <div class="mt-2">
                                 <p class="text-sm text-gray-500"><b>URL :</b> {{urlField}}</p>
-                                <p class="text-sm text-gray-500"><b>Probabilité :</b> {{proba * 100}}%</p>
+                                <p class="text-sm text-gray-500"><b>Probabilité de phishing :</b> {{proba * 100}}%</p>
                             </div>
                         </div>
                     </div>
+                    <ul class="text-center">
+                        <li class="text-sm text-gray-500" v-for="reason in reasons">
+                            {{reason}}
+                        </li>
+                    </ul>
                     <div class="mt-5 sm:mt-6">
                         <button @click="closeResult()"
                                 class="inline-flex w-full justify-center rounded-md bg-[#015f9f] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#015f9f] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#015f9f]"
@@ -121,11 +126,22 @@
                 isLoading: false,
                 showResult: false,
                 prediction: 0,
-                proba: 0
+                proba: 0,
+                reasons: []
             }
         },
         computed: {},
         methods: {
+            formatAPIResponse: function(response){
+                const features = response.features
+                let objToReturn = {}
+                features.forEach((element) => {
+                    objToReturn[element.name] = element.value
+                })
+                console.log(objToReturn)
+                return objToReturn
+
+            },
             closeResult: function () {
                 this.prediction = 0
                 this.proba = 0
@@ -147,10 +163,15 @@
                 // Get features
                 axios.post(endpoint + 'get-features', params)
                     .then(response => {
-                        console.log(response.data)
                         // Create the predictions params
-                        const data = {"features": response.data}
+                        console.log(response.data)
 
+                        response.data.features.forEach((element) => {
+                            this.reasons.push(element.reason)
+                        })
+
+                        const data = {"features": this.formatAPIResponse(response.data)}
+                        this.formatAPIResponse(response.data)
                         // Get the prediction
                         axios.post(predictionEndpoint, data, headers)
                             .then(predictionResponse => {
