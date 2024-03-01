@@ -84,25 +84,25 @@ class FeatureExtraction:
         try:
             ipaddress.ip_address(self.url)
             value = -1
-            return {"feature": "UsingIP", "value": value}
+            return {"feature": "UsingIP", "value": value, "reason": "L'URL est une adresse IP."}
 
         except:
             value = 1
-            return {"feature": "UsingIP", "value": value}
+            return {"feature": "UsingIP", "value": value, "reason": "L'URL n'est pas une adresse IP."}
 
 
     # 2.longUrl
     def longUrl(self):
         if len(self.url) < 54:
             value = 1
-            return {"feature": "LongURL", "value": value}
+            return {"feature": "LongURL", "value": value, "reason": "L'URL fait " + str(len(self.url)) + " caractères de long."}
 
         if len(self.url) >= 54 and len(self.url) <= 75:
             value = 0
-            return {"feature": "LongURL", "value": value}
+            return {"feature": "LongURL", "value": value, "reason": "L'URL fait " + str(len(self.url)) + " caractères de long."}
 
         value = -1
-        return {"feature": "LongURL", "value": value}
+        return {"feature": "LongURL", "value": value, "reason": "L'URL fait " + str(len(self.url)) + " caractères de long."}
 
     # 3.shortUrl
     def shortUrl(self):
@@ -116,28 +116,28 @@ class FeatureExtraction:
                           self.url)
         if match:
             value = -1
-            return {"feature": "ShortURL", "value": value}
+            return {"feature": "ShortURL", "value": value, "reason": "L'URL est raccourci par un site spécialisé."}
 
         value = 1
-        return {"feature": "ShortURL", "value": value}
+        return {"feature": "ShortURL", "value": value, "reason": "L'URL, n'est pas raccourci par un site spécialisé."}
 
     # 4.Symbol@
     def symbol(self):
         if re.findall("@", self.url):
             value = -1
-            return {"feature": "Symbol@", "value": value}
+            return {"feature": "Symbol@", "value": value, "reason": "Le symbole @ est présent dans l'URL"}
 
         value = 1
-        return {"feature": "Symbol@", "value": value}
+        return {"feature": "Symbol@", "value": value, "reason": "Le symbole @ n'est pas présent dans l'URL"}
 
     # 5.Redirecting//
     def redirecting(self):
         if self.url.rfind('//') > 6:
             value = -1
-            return {"feature": "Redirecting//", "value": value}
+            return {"feature": "Redirecting//", "value": value, "reason": "L'URL est utilisé pour une redirection."}
 
         value = 1
-        return {"feature": "Redirecting//", "value": value}
+        return {"feature": "Redirecting//", "value": value, "reason": "L'URL n'est pas utilisé pour une redirection."}
 
     # 6.prefixSuffix
     def prefixSuffix(self):
@@ -145,14 +145,14 @@ class FeatureExtraction:
             match = re.findall('\-', self.domain)
             if match:
                 value = -1
-                return {"feature": "PrefixSuffix-", "value": value}
+                return {"feature": "PrefixSuffix-", "value": value, "reason": "L'URL contient un -"}
 
             value = 1
-            return {"feature": "PrefixSuffix-", "value": value}
+            return {"feature": "PrefixSuffix-", "value": value, "reason": "L'URL ne contient pas de -"}
 
         except:
             value = -1
-            return {"feature": "PrefixSuffix-", "value": value}
+            return {"feature": "PrefixSuffix-", "value": value, "reason": "Exception"}
 
 
     # 7.SubDomains
@@ -160,14 +160,14 @@ class FeatureExtraction:
         dot_count = len(re.findall("\.", self.url))
         if dot_count == 1:
             value = 1
-            return {"feature": "SubDomains", "value": value}
+            return {"feature": "SubDomains", "value": value, "reason": "L'URL ne contient pas de sous-domaine."}
 
         elif dot_count == 2:
             value = 0
-            return {"feature": "SubDomains", "value": value}
+            return {"feature": "SubDomains", "value": value, "reason": "L'URL contient un sous-domaine."}
 
         value = -1
-        return {"feature": "SubDomains", "value": value}
+        return {"feature": "SubDomains", "value": value, "reason": "Exception"}
 
     # 8.HTTPS
     def Https(self):
@@ -175,14 +175,14 @@ class FeatureExtraction:
             parsed_url = urlparse(self.url)
             if 'https' in parsed_url.scheme:
                 value = 1
-                return {"feature": "HTTPS", "value": value}
+                return {"feature": "HTTPS", "value": value, "reason": "Protocole HTTPS utilisé"}
 
             value = -1
-            return {"feature": "HTTPS", "value": value}
+            return {"feature": "HTTPS", "value": value, "reason": "Protocole HTTPS non utilisé"}
 
         except:
             value = 1
-            return {"feature": "HTTPS", "value": value}
+            return {"feature": "HTTPS", "value": value, "reason": "Exception"}
 
     # 9.DomainRegLen
     def DomainRegLen(self):
@@ -203,14 +203,14 @@ class FeatureExtraction:
             age = (expiration_date.year - creation_date.year) * 12 + (expiration_date.month - creation_date.month)
             if age >= 12:
                 value = 1
-                return {"feature": "DomainRegLen", "value": value}
+                return {"feature": "DomainRegLen", "value": value, "reason": "Premier enregistrement du domaine il y a " + str(age) + " mois."}
 
             value = -1
-            return {"feature": "DomainRegLen", "value": value}
+            return {"feature": "DomainRegLen", "value": value,"reason": "Premier enregistrement du domaine il y a " + str(age) + " mois."}
 
         except:
             value = -1
-            return {"feature": "DomainRegLen", "value": value}
+            return {"feature": "DomainRegLen", "value": value, "reason": "Exception"}
 
     # 10. Favicon
     def Favicon(self):
@@ -220,14 +220,14 @@ class FeatureExtraction:
                     dots = [x.start(0) for x in re.finditer('\.', head.link['href'])]
                     if self.url in head.link['href'] or len(dots) == 1 or self.domain in head.link['href']:
                         value = 1
-                        return {"feature": "Favicon", "value": value}
+                        return {"feature": "Favicon", "value": value, "reason": "Favicon trouvé."}
 
             value = -1
-            return {"feature": "Favicon", "value": value}
+            return {"feature": "Favicon", "value": value, "reason": "Favicon non trouvé."}
 
         except:
             value = -1
-            return {"feature": "Favicon", "value": value}
+            return {"feature": "Favicon", "value": value, "reason": "Exception"}
 
     # 11. NonStdPort
     def NonStdPort(self):
@@ -235,14 +235,14 @@ class FeatureExtraction:
             port = self.domain.split(":")
             if len(port) > 1:
                 value = -1
-                return {"feature": "NonStdPort", "value": value}
+                return {"feature": "NonStdPort", "value": value, "reason": "Port utilisé dans l'URL."}
 
             value = 1
-            return {"feature": "NonStdPort", "value": value}
+            return {"feature": "NonStdPort", "value": value, "reason": "Port non utilisé dans l'URL."}
 
         except:
             value = -1
-            return {"feature": "NonStdPort", "value": value}
+            return {"feature": "NonStdPort", "value": value, "reason": "Exception"}
 
     # 12. HTTPSDomainURL
     def HTTPSDomainURL(self):
@@ -251,14 +251,14 @@ class FeatureExtraction:
 
             if 'https' in parsed_url.scheme:
                 value = -1
-                return {"feature": "HTTPSDomainURL", "value": value}
+                return {"feature": "HTTPSDomainURL", "value": value, "reason": "HTTPS utilisé"}
 
             value = 1
-            return {"feature": "HTTPSDomainURL", "value": value}
+            return {"feature": "HTTPSDomainURL", "value": value, "reason": "HTTPS non utilisé"}
 
         except:
             value = -1
-            return {"feature": "HTTPSDomainURL", "value": value}
+            return {"feature": "HTTPSDomainURL", "value": value, "reason": "Exception"}
 
     # 13. RequestURL
     def RequestURL(self):
@@ -291,23 +291,23 @@ class FeatureExtraction:
                 percentage = success / float(i) * 100
                 if percentage < 22.0:
                     value = 1
-                    return {"feature": "RequestURL", "value": value}
+                    return {"feature": "RequestURL", "value": value, "reason": str(percentage) + "% des médias contienent l'URL."}
 
                 elif ((percentage >= 22.0) and (percentage < 61.0)):
                     value = 0
-                    return {"feature": "RequestURL", "value": value}
+                    return {"feature": "RequestURL", "value": value, "reason": str(percentage) + "% des médias contienent l'URL."}
 
                 else:
                     value = -1
-                    return {"feature": "RequestURL", "value": value}
+                    return {"feature": "RequestURL", "value": value, "reason": str(percentage) + "% des médias contienent l'URL."}
 
             except:
                 value = 0
-                return {"feature": "RequestURL", "value": value}
+                return {"feature": "RequestURL", "value": value, "reason": "Exception"}
 
         except:
             value = -1
-            return {"feature": "RequestURL", "value": value}
+            return {"feature": "RequestURL", "value": value, "reason": "Exception"}
 
     # 14. AnchorURL
     def AnchorURL(self):
@@ -322,19 +322,19 @@ class FeatureExtraction:
                 percentage = unsafe / float(i) * 100
                 if percentage < 31.0:
                     value = 1
-                    return {"feature": "AnchorURL", "value": value}
+                    return {"feature": "AnchorURL", "value": value, "reason": str(percentage) + "% des liens contiennent href, javascript ou mailto."}
                 elif ((percentage >= 31.0) and (percentage < 67.0)):
                     value = 0
-                    return {"feature": "AnchorURL", "value": value}
+                    return {"feature": "AnchorURL", "value": value, "reason": str(percentage) + "% des liens contiennent href, javascript ou mailto."}
                 else:
                     value = -1
-                    return {"feature": "AnchorURL", "value": value}
+                    return {"feature": "AnchorURL", "value": value, "reason": str(percentage) + "% des liens contiennent href, javascript ou mailto."}
             except:
                 value = -1
-                return {"feature": "AnchorURL", "value": value}
+                return {"feature": "AnchorURL", "value": value, "reason": "Exception"}
         except:
             value = -1
-            return {"feature": "AnchorURL", "value": value}
+            return {"feature": "AnchorURL", "value": value, "reason": "Exception"}
 
     # 15. LinksInScriptTags
     def LinksInScriptTags(self):
@@ -357,62 +357,62 @@ class FeatureExtraction:
                 percentage = success / float(i) * 100
                 if percentage < 17.0:
                     value = 1
-                    return {"feature": "LinksInScriptTags", "value": value}
+                    return {"feature": "LinksInScriptTags", "value": value, "reason": str(percentage) + "% des liens dans script et link contiennent l'URL."}
                 elif ((percentage >= 17.0) and (percentage < 81.0)):
                     value = 0
-                    return {"feature": "LinksInScriptTags", "value": value}
+                    return {"feature": "LinksInScriptTags", "value": value, "reason": str(percentage) + "% des liens dans script et link contiennent l'URL."}
 
                 else:
                     value = -1
-                    return {"feature": "LinksInScriptTags", "value": value}
+                    return {"feature": "LinksInScriptTags", "value": value, "reason": str(percentage) + "% des liens dans script et link contiennent l'URL."}
 
             except:
                 value = 0
-                return {"feature": "LinksInScriptTags", "value": value}
+                return {"feature": "LinksInScriptTags", "value": value, "reason": "Exception"}
 
         except:
             value = -1
-            return {"feature": "LinksInScriptTags", "value": value}
+            return {"feature": "LinksInScriptTags", "value": value, "reason": "Exception"}
 
     # 16. ServerFormHandler
     def ServerFormHandler(self):
         try:
             if len(self.soup.find_all('form', action=True)) == 0:
                 value = 1
-                return {"feature": "ServerFormHandler", "value": value}
+                return {"feature": "ServerFormHandler", "value": value, "reason": "Aucun formulaire trouvé dans la page."}
 
             else:
                 for form in self.soup.find_all('form', action=True):
                     if form['action'] == "" or form['action'] == "about:blank":
                         value = -1
-                        return {"feature": "ServerFormHandler", "value": value}
+                        return {"feature": "ServerFormHandler", "value": value, "reason": "Balise action vide ou about:blank."}
 
                     elif self.url not in form['action'] and self.domain not in form['action']:
                         value = 0
-                        return {"feature": "ServerFormHandler", "value": value}
+                        return {"feature": "ServerFormHandler", "value": value, "reason": "Le domaine ou l'URL ne se trouve pas dans la balise action."}
 
                     else:
                         value = 1
-                        return {"feature": "ServerFormHandler", "value": value}
+                        return {"feature": "ServerFormHandler", "value": value, "reason": "Autre."}
 
         except:
             value = -1
-            return {"feature": "ServerFormHandler", "value": value}
+            return {"feature": "ServerFormHandler", "value": value, "reason": "Exception"}
 
     # 17. InfoEmail
     def InfoEmail(self):
         try:
             if re.findall(r"[mail\(\)|mailto:?]", self.soap):
                 value = -1
-                return {"feature": "InfoEmail", "value": value}
+                return {"feature": "InfoEmail", "value": value, "reason": "Mailto trouvé dans la page."}
 
             else:
                 value = 1
-                return {"feature": "InfoEmail", "value": value}
+                return {"feature": "InfoEmail", "value": value, "reason": "Mailto non trouvé dans la page."}
 
         except:
             value = -1
-            return {"feature": "InfoEmail", "value": value}
+            return {"feature": "InfoEmail", "value": value, "reason": "Exception"}
 
     # 18. AbnormalURL
     def AbnormalURL(self):
@@ -423,55 +423,55 @@ class FeatureExtraction:
                 for dn in self.whois_response.domain_name:
                     if dn.lower() in self.url.lower():
                         value = 1
-                        return {"feature": "AbnormalURL", "value": value}
+                        return {"feature": "AbnormalURL", "value": value, "reason": "Nom de domaine présent dans l'URl"}
                     else:
                         value = -1
-                        return {"feature": "AbnormalURL", "value": value}
+                        return {"feature": "AbnormalURL", "value": value, "reason": "Nom de domaine non présent dans l'URl"}
             else:
                 if self.whois_response.domain_name.lower() in self.url.lower():
                     value = 1
-                    return {"feature": "AbnormalURL", "value": value}
+                    return {"feature": "AbnormalURL", "value": value, "reason": "Nom de domaine présent dans l'URl"}
                 else:
                     value = -1
-                    return {"feature": "AbnormalURL", "value": value}
+                    return {"feature": "AbnormalURL", "value": value, "reason": "Nom de domaine non présent dans l'URl"}
         except Exception as e:
             value = -1
             print(e)
-            return {"feature": "AbnormalURL", "value": value}
+            return {"feature": "AbnormalURL", "value": value, "reason": "Exception"}
 
     # 19. WebsiteForwarding
     def WebsiteForwarding(self):
         try:
             if len(self.response.history) <= 1:
                 value = 1
-                return {"feature": "WebsiteForwarding", "value": value}
+                return {"feature": "WebsiteForwarding", "value": value, "reason": str(len(self.response.history)) + " redirections trouvées."}
 
             elif len(self.response.history) <= 4:
                 value = 0
-                return {"feature": "WebsiteForwarding", "value": value}
+                return {"feature": "WebsiteForwarding", "value": value, "reason": str(len(self.response.history)) + " redirections trouvées."}
 
             else:
                 value = -1
-                return {"feature": "WebsiteForwarding", "value": value}
+                return {"feature": "WebsiteForwarding", "value": value, "reason": str(len(self.response.history)) + " redirections trouvées."}
 
         except:
             value = -1
-            return {"feature": "WebsiteForwarding", "value": value}
+            return {"feature": "WebsiteForwarding", "value": value, "reason": "Exception"}
 
     # 20. StatusBarCust
     def StatusBarCust(self):
         try:
             if re.findall("<script>.+onmouseover.+</script>", self.response.text):
                 value = 1
-                return {"feature": "StatusBarCust", "value": value}
+                return {"feature": "StatusBarCust", "value": value, "reason": "OnMouseOver trouvée sur la page."}
 
             else:
                 value = -1
-                return {"feature": "StatusBarCust", "value": value}
+                return {"feature": "StatusBarCust", "value": value, "reason": "OnMouseOver non trouvée sur la page."}
 
         except:
             value = -1
-            return {"feature": "StatusBarCust", "value": value}
+            return {"feature": "StatusBarCust", "value": value, "reason": "Exception"}
 
 
     # 21. DisableRightClick
@@ -479,43 +479,43 @@ class FeatureExtraction:
         try:
             if re.findall(r"event.button ?== ?2", self.response.text):
                 value = 1
-                return {"feature": "DisableRightClick", "value": value}
+                return {"feature": "DisableRightClick", "value": value, "reason": "Clic droit désactivé sur la page."}
 
             else:
                 value = -1
-                return {"feature": "DisableRightClick", "value": value}
+                return {"feature": "DisableRightClick", "value": value, "reason": "Clic droit non désactivé sur la page."}
 
         except:
             value = -1
-            return {"feature": "DisableRightClick", "value": value}
+            return {"feature": "DisableRightClick", "value": value, "reason": "Exception"}
 
     # 22. UsingPopupWindow
     def UsingPopupWindow(self):
         try:
             if re.findall(r"alert\(", self.response.text):
                 value = 1
-                return {"feature": "UsingPopupWindow", "value": value}
+                return {"feature": "UsingPopupWindow", "value": value, "reason": "Balise alert() trouvée dans la page."}
 
             else:
                 value = -1
-                return {"feature": "UsingPopupWindow", "value": value}
+                return {"feature": "UsingPopupWindow", "value": value, "reason": "Aucune balise alert() trouvée dans la page."}
 
         except:
             value = -1
-            return {"feature": "UsingPopupWindow", "value": value}
+            return {"feature": "UsingPopupWindow", "value": value, "reason": "Exception"}
 
     # 23. IframeRedirection
     def IframeRedirection(self):
         try:
             if re.findall(r"[<iframe>|<frameBorder>]", self.response.text):
                 value = 1
-                return {"feature": "IframeRedirection", "value": value}
+                return {"feature": "IframeRedirection", "value": value, "reason": "iFrame trouvée dans la page."}
             else:
                 value = -1
-                return {"feature": "IframeRedirection", "value": value}
+                return {"feature": "IframeRedirection", "value": value, "reason": "Aucune iFrame trouvée dans la page."}
         except:
             value = -1
-            return {"feature": "IframeRedirection", "value": value}
+            return {"feature": "IframeRedirection", "value": value, "reason": "Exception"}
 
     # 24. AgeofDomain
     def AgeofDomain(self):
@@ -532,13 +532,13 @@ class FeatureExtraction:
             # Plus grand que 6 mois
             if age >= 6:
                 value = 1
-                return {"feature": "AgeofDomain", "value": value}
+                return {"feature": "AgeofDomain", "value": value, "reason": "Date du domaine est de " + str(age) + " mois."}
             else:
                 value = -1
-                return {"feature": "AgeofDomain", "value": value}
+                return {"feature": "AgeofDomain", "value": value, "reason": "Date du domaine est de " + str(age) + " mois."}
         except:
             value = -1
-            return {"feature": "AgeofDomain", "value": value}
+            return {"feature": "AgeofDomain", "value": value, "reason": "Exception"}
 
     # 25. DNSRecording
     def DNSRecording(self):
@@ -554,13 +554,13 @@ class FeatureExtraction:
             age = (today.year - creation_date.year) * 12 + (today.month - creation_date.month)
             if age >= 6:
                 value = 1
-                return {"feature": "DNSRecording", "value": value}
+                return {"feature": "DNSRecording", "value": value, "reason": "Date du premier enregistrement DNS est de " + str(age) + " mois."}
             else:
                 value = -1
-                return {"feature": "DNSRecording", "value": value}
+                return {"feature": "DNSRecording", "value": value, "reason": "Date du premier enregistrement DNS est de " + str(age) + " mois."}
         except:
             value = -1
-            return {"feature": "DNSRecording", "value": value}
+            return {"feature": "DNSRecording", "value": value, "reason": "Exception"}
 
     # 26. WebsiteTraffic
     def WebsiteTraffic(self):
@@ -613,13 +613,13 @@ class FeatureExtraction:
             number_of_links = len(re.findall(r"<a href=", self.response.text))
             if number_of_links == 0:
                 value = 1
-                return {"feature": "LinksPointingToPage", "value": value}
+                return {"feature": "LinksPointingToPage", "value": value, "reason": "Aucun lien entrant sur la page trouvé."}
             elif number_of_links <= 2:
                 value = 0
-                return {"feature": "LinksPointingToPage", "value": value}
+                return {"feature": "LinksPointingToPage", "value": value, "reason": str(number_of_links) + " liens entrants trouvés."}
             else:
                 value = -1
-                return {"feature": "LinksPointingToPage", "value": value}
+                return {"feature": "LinksPointingToPage", "value": value, "reason": str(number_of_links) + " liens entrants trouvés."}
         except:
             value = -1
             return {"feature": "LinksPointingToPage", "value": value}
@@ -628,8 +628,7 @@ class FeatureExtraction:
     def StatsReport(self):
         try:
             url_match = re.search(
-                'at\.ua|usa\.cc|baltazarpresentes\.com\.br|pe\.hu|esy\.es|hol\.es|sweddy\.com|myjino\.ru|96\.lt|ow\.ly',
-                self.url)
+                'at\.ua|usa\.cc|baltazarpresentes\.com\.br|pe\.hu|esy\.es|hol\.es|sweddy\.com|myjino\.ru|96\.lt|ow\.ly', self.url)
             ip_address = socket.gethostbyname(self.domain)
             ip_match = re.search(
                 '146\.112\.61\.108|213\.174\.157\.151|121\.50\.168\.88|192\.185\.217\.116|78\.46\.211\.158|181\.174\.165\.13|46\.242\.145\.103|121\.50\.168\.40|83\.125\.22\.219|46\.242\.145\.98|'
@@ -641,24 +640,34 @@ class FeatureExtraction:
                 ip_address)
             if url_match:
                 value = -1
+                return {"feature": "StatsReport", "value": value, "reason": "Extension de l'URL suspicieuse."}
             elif ip_match:
                 value = -1
+                return {"feature": "StatsReport", "value": value, "reason": "Adresse IP du site suspicieuse."}
             else:
                 value = 1
-            tuple = {"feature": "StatsReport", "value": value}
-            return tuple
+                return {"feature": "StatsReport", "value": value, "reason": "No reason"}
+
         except:
             value = 1
-            tuple = {"feature": "StatsReport", "value": value}
+            tuple = {"feature": "StatsReport", "value": value, "reason": "Exception"}
             return tuple
 
     def getFeaturesList(self):
-        features = {}
+        features_list = []  # Initialiser une liste pour stocker les caractéristiques filtrées
         features_to_drop = ['WebsiteTraffic', "GoogleIndex", "PageRank", "AnchorURL"]
         for f in self.features:
             if f['feature'] not in features_to_drop:
-                features[f['feature']] = f['value']
-        return features
+                # Créer un dictionnaire pour la caractéristique actuelle en incluant 'name', 'value', et 'reason'
+                obj = {
+                    'name': f['feature'],
+                    'value': f['value'],
+                    'reason': f['reason']
+                }
+                features_list.append(obj)  # Ajouter le dictionnaire à la liste des caractéristiques
+
+        # Retourner le résultat final dans le format JSON attendu
+        return {'features': features_list}
 
 
 
