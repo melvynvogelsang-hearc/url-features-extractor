@@ -83,9 +83,11 @@
                             </svg>
                           </div>
                         <div class="mt-3 text-center sm:mt-5">
-                            <h3 class="text-base font-semibold leading-6 text-gray-900" id="modal-title"> Le site semble <b>frauduleux</b></h3>
+                            <h3 class="text-base font-semibold leading-6 text-gray-900" id="modal-title">
+                                Le site semble <b>{{ prediction == 1 ? "fiable" : "frauduleux" }}</b> !</h3>
                             <div class="mt-2">
-                                <p class="text-sm text-gray-500">Probabilité : {{proba * 100}}%</p>
+                                <p class="text-sm text-gray-500"><b>URL :</b> {{urlField}}</p>
+                                <p class="text-sm text-gray-500"><b>Probabilité :</b> {{proba * 100}}%</p>
                             </div>
                         </div>
                     </div>
@@ -153,7 +155,6 @@
                                 this.showResult = true
                                 // Reset fields
                                 this.isLoading = false
-                                this.urlField = ''
                             })
                     })
                     .catch(error => {

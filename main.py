@@ -417,14 +417,26 @@ class FeatureExtraction:
     # 18. AbnormalURL
     def AbnormalURL(self):
         try:
-            if self.whois_response.domain_name.lower() in self.url.lower():
-                value = 1
-                return {"feature": "AbnormalURL", "value": value}
+            print(self.whois_response.domain_name)
+            print(self.url)
+            if isinstance(self.whois_response.domain_name, list):
+                for dn in self.whois_response.domain_name:
+                    if dn.lower() in self.url.lower():
+                        value = 1
+                        return {"feature": "AbnormalURL", "value": value}
+                    else:
+                        value = -1
+                        return {"feature": "AbnormalURL", "value": value}
             else:
-                value = -1
-                return {"feature": "AbnormalURL", "value": value}
-        except:
+                if self.whois_response.domain_name.lower() in self.url.lower():
+                    value = 1
+                    return {"feature": "AbnormalURL", "value": value}
+                else:
+                    value = -1
+                    return {"feature": "AbnormalURL", "value": value}
+        except Exception as e:
             value = -1
+            print(e)
             return {"feature": "AbnormalURL", "value": value}
 
     # 19. WebsiteForwarding
@@ -479,7 +491,6 @@ class FeatureExtraction:
 
     # 22. UsingPopupWindow
     def UsingPopupWindow(self):
-        print(self.response.text)
         try:
             if re.findall(r"alert\(", self.response.text):
                 value = 1
@@ -643,7 +654,7 @@ class FeatureExtraction:
 
     def getFeaturesList(self):
         features = {}
-        features_to_drop = ['WebsiteTraffic', "GoogleIndex", "PageRank", "HTTPS", "AnchorURL"]
+        features_to_drop = ['WebsiteTraffic', "GoogleIndex", "PageRank"]
         for f in self.features:
             if f['feature'] not in features_to_drop:
                 features[f['feature']] = f['value']
