@@ -639,8 +639,7 @@ class FeatureExtraction:
         features = {}
         for f in self.features:
             features[f['feature']] = f['value']
-        response = {'features': features}
-        return response
+        return features
 
 
 
