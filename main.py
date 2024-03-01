@@ -208,8 +208,9 @@ class FeatureExtraction:
             value = -1
             return {"feature": "DomainRegLen", "value": value,"reason": "Premier enregistrement du domaine il y a " + str(age) + " mois."}
 
-        except:
+        except Exception as e:
             value = -1
+            print(e)
             return {"feature": "DomainRegLen", "value": value, "reason": "Exception"}
 
     # 10. Favicon
@@ -265,6 +266,7 @@ class FeatureExtraction:
         try:
             #correction variable non assignée
             i = 0
+            success = 0
             for img in self.soup.find_all('img', src=True):
                 dots = [x.start(0) for x in re.finditer('\.', img['src'])]
                 if self.url in img['src'] or self.domain in img['src'] or len(dots) == 1:
@@ -312,7 +314,8 @@ class FeatureExtraction:
                 print(e)
                 return {"feature": "RequestURL", "value": value, "reason": "Exception"}
 
-        except:
+        except Exception as e:
+            print(e)
             value = -1
             return {"feature": "RequestURL", "value": value, "reason": "Exception"}
 
@@ -550,7 +553,8 @@ class FeatureExtraction:
             else:
                 value = -1
                 return {"feature": "AgeofDomain", "value": value, "reason": "Date du domaine est de " + str(age) + " mois."}
-        except:
+        except Exception as e:
+            print(e)
             value = -1
             return {"feature": "AgeofDomain", "value": value, "reason": "Exception"}
 
