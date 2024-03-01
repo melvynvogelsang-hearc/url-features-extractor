@@ -6,6 +6,7 @@ import socket
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import requests
+import json
 import whois
 from serpapi import GoogleSearch
 from datetime import date, datetime
@@ -50,7 +51,7 @@ class FeatureExtraction:
         self.features.append(self.redirecting())
         self.features.append(self.prefixSuffix())
         self.features.append(self.SubDomains())
-        self.features.append(self.Hppts())
+        self.features.append(self.Https())
         self.features.append(self.DomainRegLen())
         self.features.append(self.Favicon())
 
@@ -80,17 +81,26 @@ class FeatureExtraction:
     def UsingIp(self):
         try:
             ipaddress.ip_address(self.url)
-            return -1
+            value = -1
+            return {"feature": "UsingIp", "value": value}
+
         except:
-            return 1
+            value = 1
+            return {"feature": "UsingIp", "value": value}
+
 
     # 2.longUrl
     def longUrl(self):
         if len(self.url) < 54:
-            return 1
+            value = 1
+            return {"feature": "longUrl", "value": value}
+
         if len(self.url) >= 54 and len(self.url) <= 75:
-            return 0
-        return -1
+            value = 0
+            return {"feature": "longUrl", "value": value}
+
+        value = -1
+        return {"feature": "longUrl", "value": value}
 
     # 3.shortUrl
     def shortUrl(self):
@@ -103,49 +113,74 @@ class FeatureExtraction:
                           'x\.co|prettylinkpro\.com|scrnch\.me|filoops\.info|vzturl\.com|qr\.net|1url\.com|tweez\.me|v\.gd|tr\.im|link\.zip\.net',
                           self.url)
         if match:
-            return -1
-        return 1
+            value = -1
+            return {"feature": "shortUrl", "value": value}
+
+        value = 1
+        return {"feature": "shortUrl", "value": value}
 
     # 4.Symbol@
     def symbol(self):
         if re.findall("@", self.url):
-            return -1
-        return 1
+            value = -1
+            return {"feature": "symbol@", "value": value}
+
+        value = 1
+        return {"feature": "symbol@", "value": value}
 
     # 5.Redirecting//
     def redirecting(self):
         if self.url.rfind('//') > 6:
-            return -1
-        return 1
+            value = -1
+            return {"feature": "redirecting", "value": value}
+
+        value = 1
+        return {"feature": "redirecting", "value": value}
 
     # 6.prefixSuffix
     def prefixSuffix(self):
         try:
             match = re.findall('\-', self.domain)
             if match:
-                return -1
-            return 1
+                value = -1
+                return {"feature": "prefixSuffix", "value": value}
+
+            value = 1
+            return {"feature": "prefixSuffix", "value": value}
+
         except:
-            return -1
+            value = -1
+            return {"feature": "prefixSuffix", "value": value}
+
 
     # 7.SubDomains
     def SubDomains(self):
         dot_count = len(re.findall("\.", self.url))
         if dot_count == 1:
-            return 1
+            value = 1
+            return {"feature": "SubDomains", "value": value}
+
         elif dot_count == 2:
-            return 0
-        return -1
+            value = 0
+            return {"feature": "SubDomains", "value": value}
+
+        value = -1
+        return {"feature": "SubDomains", "value": value}
 
     # 8.HTTPS
-    def Hppts(self):
+    def Https(self):
         try:
             https = self.urlparse.scheme
             if 'https' in https:
-                return 1
-            return -1
+                value = 1
+                return {"feature": "Https", "value": value}
+
+            value = -1
+            return {"feature": "Https", "value": value}
+
         except:
-            return 1
+            value = 1
+            return {"feature": "Https", "value": value}
 
     # 9.DomainRegLen
     def DomainRegLen(self):
@@ -165,10 +200,15 @@ class FeatureExtraction:
 
             age = (expiration_date.year - creation_date.year) * 12 + (expiration_date.month - creation_date.month)
             if age >= 12:
-                return 1
-            return -1
+                value = 1
+                return {"feature": "DomainRegLen", "value": value}
+
+            value = -1
+            return {"feature": "DomainRegLen", "value": value}
+
         except:
-            return -1
+            value = -1
+            return {"feature": "DomainRegLen", "value": value}
 
     # 10. Favicon
     def Favicon(self):
@@ -177,29 +217,44 @@ class FeatureExtraction:
                 for head.link in self.soup.find_all('link', href=True):
                     dots = [x.start(0) for x in re.finditer('\.', head.link['href'])]
                     if self.url in head.link['href'] or len(dots) == 1 or self.domain in head.link['href']:
-                        return 1
-            return -1
+                        value = 1
+                        return {"feature": "Favicon", "value": value}
+
+            value = -1
+            return {"feature": "Favicon", "value": value}
+
         except:
-            return -1
+            value = -1
+            return {"feature": "Favicon", "value": value}
 
     # 11. NonStdPort
     def NonStdPort(self):
         try:
             port = self.domain.split(":")
             if len(port) > 1:
-                return -1
-            return 1
+                value = -1
+                return {"feature": "NonStdPort", "value": value}
+
+            value = 1
+            return {"feature": "NonStdPort", "value": value}
+
         except:
-            return -1
+            value = -1
+            return {"feature": "NonStdPort", "value": value}
 
     # 12. HTTPSDomainURL
     def HTTPSDomainURL(self):
         try:
             if 'https' in self.domain:
-                return -1
-            return 1
+                value = -1
+                return {"feature": "HTTPSDomainURL", "value": value}
+
+            value = 1
+            return {"feature": "HTTPSDomainURL", "value": value}
+
         except:
-            return -1
+            value = -1
+            return {"feature": "HTTPSDomainURL", "value": value}
 
     # 13. RequestURL
     def RequestURL(self):
@@ -231,15 +286,24 @@ class FeatureExtraction:
             try:
                 percentage = success / float(i) * 100
                 if percentage < 22.0:
-                    return 1
+                    value = 1
+                    return {"feature": "RequestURL", "value": value}
+
                 elif ((percentage >= 22.0) and (percentage < 61.0)):
-                    return 0
+                    value = 0
+                    return {"feature": "RequestURL", "value": value}
+
                 else:
-                    return -1
+                    value = -1
+                    return {"feature": "RequestURL", "value": value}
+
             except:
-                return 0
+                value = 0
+                return {"feature": "RequestURL", "value": value}
+
         except:
-            return -1
+            value = -1
+            return {"feature": "RequestURL", "value": value}
 
     # 14. AnchorURL
     def AnchorURL(self):
@@ -250,20 +314,23 @@ class FeatureExtraction:
                         self.url in a['href'] or self.domain in a['href']):
                     unsafe = unsafe + 1
                 i = i + 1
-
             try:
                 percentage = unsafe / float(i) * 100
                 if percentage < 31.0:
-                    return 1
+                    value = 1
+                    return {"feature": "AnchorURL", "value": value}
                 elif ((percentage >= 31.0) and (percentage < 67.0)):
-                    return 0
+                    value = 0
+                    return {"feature": "AnchorURL", "value": value}
                 else:
-                    return -1
+                    value = -1
+                    return {"feature": "AnchorURL", "value": value}
             except:
-                return -1
-
+                value = -1
+                return {"feature": "AnchorURL", "value": value}
         except:
-            return -1
+            value = -1
+            return {"feature": "AnchorURL", "value": value}
 
     # 15. LinksInScriptTags
     def LinksInScriptTags(self):
@@ -285,103 +352,153 @@ class FeatureExtraction:
             try:
                 percentage = success / float(i) * 100
                 if percentage < 17.0:
-                    return 1
+                    value = 1
                 elif ((percentage >= 17.0) and (percentage < 81.0)):
-                    return 0
+                    value = 0
+                    return {"feature": "LinksInScriptTags", "value": value}
+
                 else:
-                    return -1
+                    value = -1
+                    return {"feature": "LinksInScriptTags", "value": value}
+
             except:
-                return 0
+                value = 0
+                return {"feature": "LinksInScriptTags", "value": value}
+
         except:
-            return -1
+            value = -1
+            return {"feature": "LinksInScriptTags", "value": value}
 
     # 16. ServerFormHandler
     def ServerFormHandler(self):
         try:
             if len(self.soup.find_all('form', action=True)) == 0:
-                return 1
+                value = 1
+                return {"feature": "ServerFormHandler", "value": value}
+
             else:
                 for form in self.soup.find_all('form', action=True):
                     if form['action'] == "" or form['action'] == "about:blank":
-                        return -1
+                        value = -1
+                        return {"feature": "ServerFormHandler", "value": value}
+
                     elif self.url not in form['action'] and self.domain not in form['action']:
-                        return 0
+                        value = 0
+                        return {"feature": "ServerFormHandler", "value": value}
+
                     else:
-                        return 1
+                        value = 1
+                        return {"feature": "ServerFormHandler", "value": value}
+
         except:
-            return -1
+            value = -1
+            return {"feature": "ServerFormHandler", "value": value}
 
     # 17. InfoEmail
     def InfoEmail(self):
         try:
             if re.findall(r"[mail\(\)|mailto:?]", self.soap):
-                return -1
+                value = -1
+                return {"feature": "InfoEmail", "value": value}
+
             else:
-                return 1
+                value = 1
+                return {"feature": "InfoEmail", "value": value}
+
         except:
-            return -1
+            value = -1
+            return {"feature": "InfoEmail", "value": value}
 
     # 18. AbnormalURL
     def AbnormalURL(self):
         try:
             if self.response.text == self.whois_response:
-                return 1
+                value = 1
+                return {"feature": "AbnormalURL", "value": value}
             else:
-                return -1
+                value = -1
+                return {"feature": "AbnormalURL", "value": value}
         except:
-            return -1
+            value = -1
+            return {"feature": "AbnormalURL", "value": value}
 
     # 19. WebsiteForwarding
     def WebsiteForwarding(self):
         try:
             if len(self.response.history) <= 1:
-                return 1
+                value = 1
+                return {"feature": "WebsiteForwarding", "value": value}
+
             elif len(self.response.history) <= 4:
-                return 0
+                value = 0
+                return {"feature": "WebsiteForwarding", "value": value}
+
             else:
-                return -1
+                value = -1
+                return {"feature": "WebsiteForwarding", "value": value}
+
         except:
-            return -1
+            value = -1
+            return {"feature": "WebsiteForwarding", "value": value}
 
     # 20. StatusBarCust
     def StatusBarCust(self):
         try:
             if re.findall("<script>.+onmouseover.+</script>", self.response.text):
-                return 1
+                value = 1
+                return {"feature": "StatusBarCust", "value": value}
+
             else:
-                return -1
+                value = -1
+                return {"feature": "StatusBarCust", "value": value}
+
         except:
-            return -1
+            value = -1
+            return {"feature": "StatusBarCust", "value": value}
+
 
     # 21. DisableRightClick
     def DisableRightClick(self):
         try:
             if re.findall(r"event.button ?== ?2", self.response.text):
-                return 1
+                value = 1
+                return {"feature": "DisableRightClick", "value": value}
+
             else:
-                return -1
+                value = -1
+                return {"feature": "DisableRightClick", "value": value}
+
         except:
-            return -1
+            value = -1
+            return {"feature": "DisableRightClick", "value": value}
 
     # 22. UsingPopupWindow
     def UsingPopupWindow(self):
         try:
             if re.findall(r"alert\(", self.response.text):
-                return 1
+                value = 1
+                return {"feature": "UsingPopupWindow", "value": value}
+
             else:
-                return -1
+                value = -1
+                return {"feature": "UsingPopupWindow", "value": value}
+
         except:
-            return -1
+            value = -1
+            return {"feature": "UsingPopupWindow", "value": value}
 
     # 23. IframeRedirection
     def IframeRedirection(self):
         try:
             if re.findall(r"[<iframe>|<frameBorder>]", self.response.text):
-                return 1
+                value = 1
+                return {"feature": "IframeRedirection", "value": value}
             else:
-                return -1
+                value = -1
+                return {"feature": "IframeRedirection", "value": value}
         except:
-            return -1
+            value = -1
+            return {"feature": "IframeRedirection", "value": value}
 
     # 24. AgeofDomain
     def AgeofDomain(self):
@@ -396,10 +513,14 @@ class FeatureExtraction:
             today = date.today()
             age = (today.year - creation_date.year) * 12 + (today.month - creation_date.month)
             if age >= 6:
-                return 1
-            return -1
+                value = 1
+                return {"feature": "AgeofDomain", "value": value}
+            else:
+                value = -1
+                return {"feature": "AgeofDomain", "value": value}
         except:
-            return -1
+            value = -1
+            return {"feature": "AgeofDomain", "value": value}
 
     # 25. DNSRecording
     def DNSRecording(self):
@@ -414,10 +535,14 @@ class FeatureExtraction:
             today = date.today()
             age = (today.year - creation_date.year) * 12 + (today.month - creation_date.month)
             if age >= 6:
-                return 1
-            return -1
+                value = 1
+                return {"feature": "DNSRecording", "value": value}
+            else:
+                value = -1
+                return {"feature": "DNSRecording", "value": value}
         except:
-            return -1
+            value = -1
+            return {"feature": "DNSRecording", "value": value}
 
     # 26. WebsiteTraffic
     def WebsiteTraffic(self):
@@ -425,22 +550,29 @@ class FeatureExtraction:
             rank = BeautifulSoup(urllib.request.urlopen("http://data.alexa.com/data?cli=10&dat=s&url=" + self.url).read(),
                                  "xml").find("REACH")['RANK']
             if (int(rank) < 100000):
-                return 1
-            return 0
+                value = 1
+                return {"feature": "WebsiteTraffic", "value": value}
+            else:
+                value = 0
+                return {"feature": "WebsiteTraffic", "value": value}
         except:
-            return -1
+            value = -1
+            return {"feature": "WebsiteTraffic", "value": value}
 
     # 27. PageRank
     def PageRank(self):
         try:
             prank_checker_response = requests.post("https://www.checkpagerank.net/index.php", {"name": self.domain})
-
             global_rank = int(re.findall(r"Global Rank: ([0-9]+)", prank_checker_response.text)[0])
             if global_rank > 0 and global_rank < 100000:
-                return 1
-            return -1
+                value = 1
+                return {"feature": "PageRank", "value": value}
+            else:
+                value = -1
+                return {"feature": "PageRank", "value": value}
         except:
-            return -1
+            value = -1
+            return {"feature": "PageRank", "value": value}
 
     # 28. GoogleIndex
     def GoogleIndex(self):
@@ -448,24 +580,31 @@ class FeatureExtraction:
             search = GoogleSearch({"q": self.url, "api_key": "56fb07c773fab28e5923e0bbba384c10eddb46845ba8ba03ddac177c49d66b19"})
             site = search.get_dict()
             if site['search_metadata']['status'] == "Success":
-                return 1
+                value = 1
+                return {"feature": "GoogleIndex", "value": value}
             else:
-                return -1
+                value = -1
+                return {"feature": "GoogleIndex", "value": value}
         except:
-            return 1
+            value = 1
+            return {"feature": "GoogleIndex", "value": value}
 
     # 29. LinksPointingToPage
     def LinksPointingToPage(self):
         try:
             number_of_links = len(re.findall(r"<a href=", self.response.text))
             if number_of_links == 0:
-                return 1
+                value = 1
+                return {"feature": "LinksPointingToPage", "value": value}
             elif number_of_links <= 2:
-                return 0
+                value = 0
+                return {"feature": "LinksPointingToPage", "value": value}
             else:
-                return -1
+                value = -1
+                return {"feature": "LinksPointingToPage", "value": value}
         except:
-            return -1
+            value = -1
+            return {"feature": "LinksPointingToPage", "value": value}
 
     # 30. StatsReport
     def StatsReport(self):
@@ -483,15 +622,24 @@ class FeatureExtraction:
                 '216\.38\.62\.18|104\.130\.124\.96|47\.89\.58\.141|78\.46\.211\.158|54\.86\.225\.156|54\.82\.156\.19|37\.157\.192\.102|204\.11\.56\.48|110\.34\.231\.42',
                 ip_address)
             if url_match:
-                return -1
+                value = -1
             elif ip_match:
-                return -1
-            return 1
+                value = -1
+            else:
+                value = 1
+
+            tuple = {"feature": "StatsReport", "value": value}
+            return tuple
         except:
-            return 1
+            value = 1
+            tuple = {"feature": "StatsReport", "value": value}
+            return tuple
 
     def getFeaturesList(self):
-        return self.features
+        features = {}
+        for f in self.features:
+            features[f['feature']] = f['value']
+        return features
 
 
 

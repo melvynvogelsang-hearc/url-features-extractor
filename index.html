@@ -70,17 +70,34 @@
       methods: {
         verifyURL: function () {
           const endpoint = "https://bi-phishing-api-d6fd210f47dd.herokuapp.com/"
+          const predictionEndpoint = "https://dataiku.hes-so.ch:8080/public/api/v1/model-deployed/v1/predict"
+
           this.isLoading = true
 
           // Create params
           const params = new URLSearchParams();
           params.append('url', this.urlField)
+
+          // Get features
           axios.post(endpoint + 'get-features', params)
             .then(response => {
               console.log(response.data);
-              // Reset fields
-              this.isLoading = false
-              this.urlField = ''
+
+              // Create the predictions params
+              const predictionParams = new URLSearchParams();
+              const features = response.data
+
+              predictionParams.append('data', features)
+
+              // Get the prediction
+              axios.post(predictionEndpoint, predictionParams)
+                      .then(predictionResponse => {
+                        console.log(predictionResponse)
+
+                        // Reset fields
+                        this.isLoading = false
+                        this.urlField = ''
+                      })
             })
             .catch(error => {
               console.error(error);
