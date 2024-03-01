@@ -654,7 +654,7 @@ class FeatureExtraction:
 
     def getFeaturesList(self):
         features = {}
-        features_to_drop = ['WebsiteTraffic', "GoogleIndex", "PageRank"]
+        features_to_drop = ['WebsiteTraffic', "GoogleIndex", "PageRank", "AnchorURL"]
         for f in self.features:
             if f['feature'] not in features_to_drop:
                 features[f['feature']] = f['value']
