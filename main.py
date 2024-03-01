@@ -41,6 +41,7 @@ class FeatureExtraction:
 
         try:
             self.whois_response = whois.whois(self.domain)
+            print(self.whois_response)
         except:
             pass
 
@@ -353,6 +354,7 @@ class FeatureExtraction:
                 percentage = success / float(i) * 100
                 if percentage < 17.0:
                     value = 1
+                    return {"feature": "LinksInScriptTags", "value": value}
                 elif ((percentage >= 17.0) and (percentage < 81.0)):
                     value = 0
                     return {"feature": "LinksInScriptTags", "value": value}
@@ -512,6 +514,8 @@ class FeatureExtraction:
 
             today = date.today()
             age = (today.year - creation_date.year) * 12 + (today.month - creation_date.month)
+            print(age)
+            # Plus grand que 6 mois
             if age >= 6:
                 value = 1
                 return {"feature": "AgeofDomain", "value": value}
@@ -627,7 +631,6 @@ class FeatureExtraction:
                 value = -1
             else:
                 value = 1
-
             tuple = {"feature": "StatsReport", "value": value}
             return tuple
         except:
@@ -637,8 +640,10 @@ class FeatureExtraction:
 
     def getFeaturesList(self):
         features = {}
+        features_to_drop = ['WebsiteTraffic', "GoogleIndex", "PageRank"]
         for f in self.features:
-            features[f['feature']] = f['value']
+            if f['feature'] not in features_to_drop:
+                features[f['feature']] = f['value']
         return features
 
 
