@@ -653,7 +653,7 @@ def query(url):
 def get_features():
     url = request.form.get('url')
     response = query(url)
-    return json.dump(response)
+    return jsonify(response)
 
 @app.route('/', methods=['GET'])
 def get_root():
