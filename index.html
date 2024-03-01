@@ -87,7 +87,7 @@
               const predictionParams = new URLSearchParams();
               const features = response.data
 
-              predictionParams.append('data', features)
+              predictionParams.append('data', JSON.stringify(response.data))
 
               // Get the prediction
               axios.post(predictionEndpoint, predictionParams)

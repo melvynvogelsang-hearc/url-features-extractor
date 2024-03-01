@@ -639,7 +639,8 @@ class FeatureExtraction:
         features = {}
         for f in self.features:
             features[f['feature']] = f['value']
-        return features
+        response = {'features': features}
+        return response
 
 
 
@@ -652,7 +653,7 @@ def query(url):
 def get_features():
     url = request.form.get('url')
     response = query(url)
-    return jsonify(response)
+    return json.dump(response)
 
 @app.route('/', methods=['GET'])
 def get_root():
