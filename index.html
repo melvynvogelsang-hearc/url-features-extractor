@@ -34,7 +34,9 @@
                            v-model="urlField">
                 </div>
             </div>
-
+            <div>
+               <p v-if="whoisError" class="mt-3 text-sm text-red-500 mb-6">Les informations WHOIS ne sont pas disponibles pour ce domaine. Impossible d'effectuer une prédiction.</p>
+            </div>
             <div class="mt-6">
                 <button @click="verifyURL()"
                         class="flex w-full justify-center items-center rounded-md bg-[#015f9f] px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-[#015f9f] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#015f9f]">
@@ -63,7 +65,9 @@
         </div>
     </div>
 
-    <div aria-labelledby="modal-title" aria-modal="true" class="relative z-10" role="dialog" v-if="showResult">
+
+
+    <div aria-labelledby="modal-title" aria-modal="true" class="relative z-10" role="dialog" v-if="showResult && !whoisError">
 
         <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
 
@@ -127,7 +131,9 @@
                 showResult: false,
                 prediction: 0,
                 proba: 0,
-                reasons: []
+                reasons: [],
+                whoisError: false,
+                whoisFeatures : ["DomainRegLen","AgeofDomain","DNSRecording","AbnormalURL"]
             }
         },
         methods: {
@@ -150,7 +156,7 @@
             verifyURL: function () {
                 const endpoint = "https://bi-phishing-api-d6fd210f47dd.herokuapp.com/"
                 const predictionEndpoint = "https://dataiku.hes-so.ch:8080/public/api/v1/model-deployed/v1/predict"
-
+                this.whoisError = false
                 this.isLoading = true
 
                 // Create params
@@ -168,6 +174,13 @@
 
                         response.data.features.forEach((element) => {
                             this.reasons.push(element.reason)
+                        })
+
+                        // Check if whois is available
+                        response.data.features.forEach((f) => {
+                            if (f.reason.includes('object has')){
+                                this.whoisError = true
+                            }
                         })
 
                         const data = {"features": this.formatAPIResponse(response.data)}

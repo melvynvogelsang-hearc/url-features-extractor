@@ -691,9 +691,9 @@ class FeatureExtraction:
 
     def getFeaturesList(self):
         features_list = []  # Initialiser une liste pour stocker les caractéristiques filtrées
-        features_to_drop = ['WebsiteTraffic', "GoogleIndex", "PageRank", "HTTPSDomainURL"]
+        features_to_keep = ['HTTPS', "AnchorURL", "PrefixSuffix-", "SubDomains", "LinksInScriptTags", "RequestURL"]
         for f in self.features:
-            if f['feature'] not in features_to_drop:
+            if f['feature'] in features_to_keep:
                 # Créer un dictionnaire pour la caractéristique actuelle en incluant 'name', 'value', et 'reason'
                 obj = {
                     'name': f['feature'],
