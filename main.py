@@ -347,11 +347,11 @@ class FeatureExtraction:
             except Exception as ee:
                 value = -1
                 print("cc" + ee)
-                return {"feature": "AnchorURL", "value": value, "reason": "Exception"}
+                return {"feature": "AnchorURL", "value": value, "reason": ee}
         except Exception as e:
             value = -1
             print(e)
-            return {"feature": "AnchorURL", "value": value, "reason": "Exception"}
+            return {"feature": "AnchorURL", "value": value, "reason": e}
 
     # 15. LinksInScriptTags
     def LinksInScriptTags(self):
