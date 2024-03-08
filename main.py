@@ -346,16 +346,15 @@ class FeatureExtraction:
 
                 if percentage < 31.0:
                     value = 1
-                    return {"feature": "AnchorURL", "value": value,
-                            "reason": str(percentage) + "% des liens contiennent #, javascript ou mailto."}
+                    return {"feature": "AnchorURL", "value": value,"reason": str(percentage) + "% des liens ne sont pas sécurisés"}
                 elif ((percentage >= 31.0) and (percentage < 67.0)):
                     value = 0
-                    return {"feature": "AnchorURL", "value": value,
-                            "reason": str(percentage) + "% des liens contiennent #, javascript ou mailto."}
+                    return {"feature": "AnchorURL", "value": value,"reason": str(percentage) + "% des liens ne sont pas sécurisés"}
+
                 else:
                     value = -1
-                    return {"feature": "AnchorURL", "value": value,
-                            "reason": str(percentage) + "% des liens contiennent #, javascript ou mailto."}
+                    return {"feature": "AnchorURL", "value": value,"reason": str(percentage) + "% des liens ne sont pas sécurisés"}
+
             except Exception as ee:
                 value = -1
                 return {"feature": "AnchorURL", "value": value, "reason": str(ee)}
