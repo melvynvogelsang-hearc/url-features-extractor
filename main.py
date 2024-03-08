@@ -334,7 +334,11 @@ class FeatureExtraction:
                     unsafe = unsafe + 1
                 i = i + 1
             try:
-                percentage = unsafe / float(i) * 100
+                if i != 0:
+                    percentage = unsafe / float(i) * 100
+                else:
+                    percentage = 0
+
                 if percentage < 31.0:
                     value = 1
                     return {"feature": "AnchorURL", "value": value, "reason": str(percentage) + "% des liens contiennent href, javascript ou mailto."}
