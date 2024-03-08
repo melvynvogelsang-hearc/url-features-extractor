@@ -170,7 +170,6 @@
                 axios.post(endpoint + 'get-features', params)
                     .then(response => {
                         // Create the predictions params
-                        console.log(response.data)
 
                         response.data.features.forEach((element) => {
                             this.reasons.push(element.reason)
@@ -189,6 +188,7 @@
                         axios.post(predictionEndpoint, data, headers)
                             .then(predictionResponse => {
                                 const prediction = predictionResponse.data.result.prediction
+                                console.log(predictionResponse)
                                 this.prediction = prediction
                                 this.proba = predictionResponse.data.result.probas[-1]
                                 this.showResult = true

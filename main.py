@@ -334,7 +334,7 @@ class FeatureExtraction:
         try:
             i, unsafe = 0, 0
             for a in self.soup.find_all('a', href=True):
-                if "#" in a['href'] or "javascript" in a['href'].lower() or "mailto" in a['href'].lower() or not (
+                if "#" in a['href'].lower() or "javascript" in a['href'].lower() or "mailto" in a['href'].lower() or not (
                         self.url in a['href'] or self.domain in a['href']):
                     unsafe = unsafe + 1
                 i = i + 1
@@ -347,15 +347,15 @@ class FeatureExtraction:
                 if percentage < 31.0:
                     value = 1
                     return {"feature": "AnchorURL", "value": value,
-                            "reason": str(percentage) + "% des liens contiennent href, javascript ou mailto."}
+                            "reason": str(percentage) + "% des liens contiennent #, javascript ou mailto."}
                 elif ((percentage >= 31.0) and (percentage < 67.0)):
                     value = 0
                     return {"feature": "AnchorURL", "value": value,
-                            "reason": str(percentage) + "% des liens contiennent href, javascript ou mailto."}
+                            "reason": str(percentage) + "% des liens contiennent #, javascript ou mailto."}
                 else:
                     value = -1
                     return {"feature": "AnchorURL", "value": value,
-                            "reason": str(percentage) + "% des liens contiennent href, javascript ou mailto."}
+                            "reason": str(percentage) + "% des liens contiennent #, javascript ou mailto."}
             except Exception as ee:
                 value = -1
                 return {"feature": "AnchorURL", "value": value, "reason": str(ee)}
