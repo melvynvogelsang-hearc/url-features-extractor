@@ -130,7 +130,6 @@
                 reasons: []
             }
         },
-        computed: {},
         methods: {
             formatAPIResponse: function(response){
                 const features = response.features
@@ -146,6 +145,7 @@
                 this.prediction = 0
                 this.proba = 0
                 this.showResult = false
+                this.reasons = []
             },
             verifyURL: function () {
                 const endpoint = "https://bi-phishing-api-d6fd210f47dd.herokuapp.com/"

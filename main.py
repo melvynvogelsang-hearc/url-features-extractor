@@ -7,6 +7,8 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 import requests
 import json
+import ssl
+import socket
 from urllib.parse import urlparse
 
 import whois
@@ -172,18 +174,23 @@ class FeatureExtraction:
     # 8.HTTPS
     def Https(self):
         try:
-            parsed_url = urlparse(self.url)
-            if 'https' in parsed_url.scheme:
-                value = 1
-                return {"feature": "HTTPS", "value": value, "reason": "Protocole HTTPS utilisé"}
-
-            value = -1
-            return {"feature": "HTTPS", "value": value, "reason": "Protocole HTTPS non utilisé"}
-
+            url = self.whois_response.domain
+            hostname = url
+            context = ssl.create_default_context()
+            with socket.create_connection((hostname, 443)) as sock:
+                with context.wrap_socket(sock, server_hostname=hostname) as ssock:
+                    if 'issuer' in ssock.getpeercert():
+                        value = 1
+                        return {"feature": "HTTPS", "value": value, "reason": "Certificat HTTPS valide"}
+                    else:
+                        if 'https' in urlparse(self.url).scheme:
+                            value = 0
+                            return {"feature": "HTTPS", "value": value, "reason": "Faux certificat HTTPS utilisé mais https présent"}
+                        else:
+                            value = -1
+                            return {"feature": "HTTPS", "value": value, "reason": "Faux certificat HTTPS utilisé"}
         except:
-            value = 1
-            return {"feature": "HTTPS", "value": value, "reason": "Exception"}
-
+            print("ex")
     # 9.DomainRegLen
     def DomainRegLen(self):
         try:
@@ -210,7 +217,6 @@ class FeatureExtraction:
 
         except Exception as e:
             value = -1
-            print(e)
             return {"feature": "DomainRegLen", "value": value, "reason": "Exception"}
 
     # 10. Favicon
@@ -315,7 +321,6 @@ class FeatureExtraction:
                 return {"feature": "RequestURL", "value": value, "reason": "Exception"}
 
         except Exception as e:
-            print(e)
             value = -1
             return {"feature": "RequestURL", "value": value, "reason": "Exception"}
 
@@ -387,7 +392,6 @@ class FeatureExtraction:
 
         except Exception as e:
             value = -1
-            print(e)
             return {"feature": "LinksInScriptTags", "value": value, "reason": "Exception"}
 
     # 16. ServerFormHandler
@@ -434,8 +438,6 @@ class FeatureExtraction:
     # 18. AbnormalURL
     def AbnormalURL(self):
         try:
-            print(self.whois_response.domain_name)
-            print(self.url)
             if isinstance(self.whois_response.domain_name, list):
                 for dn in self.whois_response.domain_name:
                     if dn.lower() in self.url.lower():
@@ -453,7 +455,6 @@ class FeatureExtraction:
                     return {"feature": "AbnormalURL", "value": value, "reason": "Nom de domaine non présent dans l'URl"}
         except Exception as e:
             value = -1
-            print(e)
             return {"feature": "AbnormalURL", "value": value, "reason": "Exception"}
 
     # 19. WebsiteForwarding
@@ -554,7 +555,6 @@ class FeatureExtraction:
                 value = -1
                 return {"feature": "AgeofDomain", "value": value, "reason": "Date du domaine est de " + str(age) + " mois."}
         except Exception as e:
-            print(e)
             value = -1
             return {"feature": "AgeofDomain", "value": value, "reason": "Exception"}
 
