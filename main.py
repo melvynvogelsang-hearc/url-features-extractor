@@ -4,7 +4,7 @@ import urllib.request
 from bs4 import BeautifulSoup
 import socket
 from flask import Flask, jsonify, request
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 import requests
 import json
 import ssl
@@ -18,7 +18,7 @@ import time
 from urllib.parse import urlparse
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, origins=["https://melvynvogelsang.ch"])
 class FeatureExtraction:
     features = []
 
@@ -700,6 +700,7 @@ def query(url):
 
 
 @app.route('/get-features', methods=['POST'])
+@cross_origin(origin='melvynvogelsang.ch')
 def get_features():
     url = request.form.get('url')
     response = query(url)
