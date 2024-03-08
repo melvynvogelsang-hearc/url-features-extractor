@@ -187,9 +187,9 @@ class FeatureExtraction:
                         else:
                             value = -1
                             return {"feature": "HTTPS", "value": value, "reason": "Faux certificat HTTPS utilisé"}
-        except:
+        except Exception as e:
             value = -1
-            return {"feature": "HTTPS", "value": value, "reason": "Aucun certificat HTTPS utilisé"}
+            return {"feature": "HTTPS", "value": value, "reason": str(e)}
 
     # 9.DomainRegLen
     def DomainRegLen(self):
