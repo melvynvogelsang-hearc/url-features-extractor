@@ -344,11 +344,13 @@ class FeatureExtraction:
                 else:
                     value = -1
                     return {"feature": "AnchorURL", "value": value, "reason": str(percentage) + "% des liens contiennent href, javascript ou mailto."}
-            except:
+            except Exception as ee:
                 value = -1
+                print("cc" + ee)
                 return {"feature": "AnchorURL", "value": value, "reason": "Exception"}
-        except:
+        except Exception as e:
             value = -1
+            print(e)
             return {"feature": "AnchorURL", "value": value, "reason": "Exception"}
 
     # 15. LinksInScriptTags
