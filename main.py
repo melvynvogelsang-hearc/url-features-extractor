@@ -219,7 +219,7 @@ class FeatureExtraction:
 
         except Exception as e:
             value = -1
-            return {"feature": "DomainRegLen", "value": value, "reason": "Exception"}
+            return {"feature": "DomainRegLen", "value": value, "reason": str(e)}
 
     # 10. Favicon
     def Favicon(self):
@@ -234,9 +234,9 @@ class FeatureExtraction:
             value = -1
             return {"feature": "Favicon", "value": value, "reason": "Favicon non trouvé."}
 
-        except:
+        except Exception as e:
             value = -1
-            return {"feature": "Favicon", "value": value, "reason": "Exception"}
+            return {"feature": "Favicon", "value": value, "reason": str(e)}
 
     # 11. NonStdPort
     def NonStdPort(self):
@@ -249,9 +249,9 @@ class FeatureExtraction:
             value = 1
             return {"feature": "NonStdPort", "value": value, "reason": "Port non utilisé dans l'URL."}
 
-        except:
+        except Exception as e:
             value = -1
-            return {"feature": "NonStdPort", "value": value, "reason": "Exception"}
+            return {"feature": "NonStdPort", "value": value, "reason": str(e)}
 
     # 12. HTTPSDomainURL
     def HTTPSDomainURL(self):
@@ -265,9 +265,9 @@ class FeatureExtraction:
             value = 1
             return {"feature": "HTTPSDomainURL", "value": value, "reason": "HTTPS non utilisé"}
 
-        except:
+        except Exception as e:
             value = -1
-            return {"feature": "HTTPSDomainURL", "value": value, "reason": "Exception"}
+            return {"feature": "HTTPSDomainURL", "value": value, "reason": str(e)}
 
     # 13. RequestURL
     def RequestURL(self):
@@ -395,11 +395,11 @@ class FeatureExtraction:
             except Exception as e:
                 value = 0
                 print(e)
-                return {"feature": "LinksInScriptTags", "value": value, "reason": "Exception"}
+                return {"feature": "LinksInScriptTags", "value": value, "reason": str(e)}
 
         except Exception as e:
             value = -1
-            return {"feature": "LinksInScriptTags", "value": value, "reason": "Exception"}
+            return {"feature": "LinksInScriptTags", "value": value, "reason": str(e)}
 
     # 16. ServerFormHandler
     def ServerFormHandler(self):
@@ -422,9 +422,9 @@ class FeatureExtraction:
                         value = 1
                         return {"feature": "ServerFormHandler", "value": value, "reason": "Autre."}
 
-        except:
+        except Exception as e:
             value = -1
-            return {"feature": "ServerFormHandler", "value": value, "reason": "Exception"}
+            return {"feature": "ServerFormHandler", "value": value, "reason": str(e)}
 
     # 17. InfoEmail
     def InfoEmail(self):
@@ -438,9 +438,9 @@ class FeatureExtraction:
                 value = 1
                 return {"feature": "InfoEmail", "value": value, "reason": "Mailto non trouvé dans la page."}
 
-        except:
+        except Exception as e:
             value = -1
-            return {"feature": "InfoEmail", "value": value, "reason": "Exception"}
+            return {"feature": "InfoEmail", "value": value, "reason": str(e)}
 
     # 18. AbnormalURL
     def AbnormalURL(self):
@@ -462,7 +462,7 @@ class FeatureExtraction:
                     return {"feature": "AbnormalURL", "value": value, "reason": "Nom de domaine non présent dans l'URl"}
         except Exception as e:
             value = -1
-            return {"feature": "AbnormalURL", "value": value, "reason": "Exception"}
+            return {"feature": "AbnormalURL", "value": value, "reason": str(e)}
 
     # 19. WebsiteForwarding
     def WebsiteForwarding(self):
@@ -479,9 +479,9 @@ class FeatureExtraction:
                 value = -1
                 return {"feature": "WebsiteForwarding", "value": value, "reason": str(len(self.response.history)) + " redirections trouvées."}
 
-        except:
+        except Exception as e:
             value = -1
-            return {"feature": "WebsiteForwarding", "value": value, "reason": "Exception"}
+            return {"feature": "WebsiteForwarding", "value": value, "reason": str(e)}
 
     # 20. StatusBarCust
     def StatusBarCust(self):
@@ -494,9 +494,9 @@ class FeatureExtraction:
                 value = -1
                 return {"feature": "StatusBarCust", "value": value, "reason": "OnMouseOver non trouvée sur la page."}
 
-        except:
+        except Exception as e:
             value = -1
-            return {"feature": "StatusBarCust", "value": value, "reason": "Exception"}
+            return {"feature": "StatusBarCust", "value": value, "reason": str(e)}
 
 
     # 21. DisableRightClick
@@ -510,9 +510,9 @@ class FeatureExtraction:
                 value = -1
                 return {"feature": "DisableRightClick", "value": value, "reason": "Clic droit non désactivé sur la page."}
 
-        except:
+        except Exception as e:
             value = -1
-            return {"feature": "DisableRightClick", "value": value, "reason": "Exception"}
+            return {"feature": "DisableRightClick", "value": value, "reason": str(e)}
 
     # 22. UsingPopupWindow
     def UsingPopupWindow(self):
@@ -525,9 +525,9 @@ class FeatureExtraction:
                 value = -1
                 return {"feature": "UsingPopupWindow", "value": value, "reason": "Aucune balise alert() trouvée dans la page."}
 
-        except:
+        except Exception as e:
             value = -1
-            return {"feature": "UsingPopupWindow", "value": value, "reason": "Exception"}
+            return {"feature": "UsingPopupWindow", "value": value, "reason": str(e)}
 
     # 23. IframeRedirection
     def IframeRedirection(self):
@@ -538,9 +538,9 @@ class FeatureExtraction:
             else:
                 value = -1
                 return {"feature": "IframeRedirection", "value": value, "reason": "Aucune iFrame trouvée dans la page."}
-        except:
+        except Exception as e:
             value = -1
-            return {"feature": "IframeRedirection", "value": value, "reason": "Exception"}
+            return {"feature": "IframeRedirection", "value": value, "reason": str(e)}
 
     # 24. AgeofDomain
     def AgeofDomain(self):
@@ -563,7 +563,7 @@ class FeatureExtraction:
                 return {"feature": "AgeofDomain", "value": value, "reason": "Date du domaine est de " + str(age) + " mois."}
         except Exception as e:
             value = -1
-            return {"feature": "AgeofDomain", "value": value, "reason": "Exception"}
+            return {"feature": "AgeofDomain", "value": value, "reason": str(e)}
 
     # 25. DNSRecording
     def DNSRecording(self):
@@ -583,9 +583,9 @@ class FeatureExtraction:
             else:
                 value = -1
                 return {"feature": "DNSRecording", "value": value, "reason": "Date du premier enregistrement DNS est de " + str(age) + " mois."}
-        except:
+        except Exception as e:
             value = -1
-            return {"feature": "DNSRecording", "value": value, "reason": "Exception"}
+            return {"feature": "DNSRecording", "value": value, "reason": str(e)}
 
     # 26. WebsiteTraffic
     def WebsiteTraffic(self):
@@ -598,7 +598,7 @@ class FeatureExtraction:
             else:
                 value = 0
                 return {"feature": "WebsiteTraffic", "value": value}
-        except:
+        except Exception as e:
             value = -1
             return {"feature": "WebsiteTraffic", "value": value}
 
@@ -645,9 +645,9 @@ class FeatureExtraction:
             else:
                 value = -1
                 return {"feature": "LinksPointingToPage", "value": value, "reason": str(number_of_links) + " liens entrants trouvés."}
-        except:
+        except Exception as e:
             value = -1
-            return {"feature": "LinksPointingToPage", "value": value}
+            return {"feature": "LinksPointingToPage", "value": value, "reason": str(e)}
 
     # 30. StatsReport
     def StatsReport(self):
@@ -673,9 +673,9 @@ class FeatureExtraction:
                 value = 1
                 return {"feature": "StatsReport", "value": value, "reason": "L'adresse IP et l'URL sont corrects."}
 
-        except:
+        except Exception as e:
             value = 1
-            tuple = {"feature": "StatsReport", "value": value, "reason": "Exception"}
+            tuple = {"feature": "StatsReport", "value": value, "reason": str(e)}
             return tuple
 
     def getFeaturesList(self):
