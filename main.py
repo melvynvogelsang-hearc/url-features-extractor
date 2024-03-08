@@ -277,25 +277,25 @@ class FeatureExtraction:
             success = 0
             for img in self.soup.find_all('img', src=True):
                 dots = [x.start(0) for x in re.finditer('\.', img['src'])]
-                if self.url in img['src'] or self.domain in img['src'] or len(dots) == 1:
+                if self.url.lower() in img['src'].lower() or self.domain.lower() in img['src'].lower() or len(dots) == 1:
                     success = success + 1
                 i = i + 1
 
             for audio in self.soup.find_all('audio', src=True):
                 dots = [x.start(0) for x in re.finditer('\.', audio['src'])]
-                if self.url in audio['src'] or self.domain in audio['src'] or len(dots) == 1:
+                if self.url.lower() in audio['src'].lower() or self.domain.lower() in audio['src'].lower() or len(dots) == 1:
                     success = success + 1
                 i = i + 1
 
             for embed in self.soup.find_all('embed', src=True):
                 dots = [x.start(0) for x in re.finditer('\.', embed['src'])]
-                if self.url in embed['src'] or self.domain in embed['src'] or len(dots) == 1:
+                if self.url.lower() in embed['src'].lower() or self.domain.lower() in embed['src'].lower() or len(dots) == 1:
                     success = success + 1
                 i = i + 1
 
             for iframe in self.soup.find_all('iframe', src=True):
                 dots = [x.start(0) for x in re.finditer('\.', iframe['src'])]
-                if self.url in iframe['src'] or self.domain in iframe['src'] or len(dots) == 1:
+                if self.url.lower() in iframe['src'].lower() or self.domain.lower() in iframe['src'].lower() or len(dots) == 1:
                     success = success + 1
                 i = i + 1
 
@@ -370,14 +370,14 @@ class FeatureExtraction:
             i, success = 0, 0
 
             for link in self.soup.find_all('link', href=True):
-                dots = [x.start(0) for x in re.finditer('\.', link['href'])]
-                if self.url in link['href'] or self.domain in link['href'] or len(dots) == 1:
+                dots = [x.start(0) for x in re.finditer('\.', link['href'].lower())]
+                if self.url.lower() in link['href'].lower() or self.domain.lower() in link['href'].lower() or len(dots) == 1:
                     success = success + 1
                 i = i + 1
 
             for script in self.soup.find_all('script', src=True):
-                dots = [x.start(0) for x in re.finditer('\.', script['src'])]
-                if self.url in script['src'] or self.domain in script['src'] or len(dots) == 1:
+                dots = [x.start(0) for x in re.finditer('\.', script['src'].lower())]
+                if self.url.lower() in script['src'].lower() or self.domain.lower() in script['src'].lower() or len(dots) == 1:
                     success = success + 1
                 i = i + 1
 
