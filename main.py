@@ -346,7 +346,6 @@ class FeatureExtraction:
                     return {"feature": "AnchorURL", "value": value, "reason": str(percentage) + "% des liens contiennent href, javascript ou mailto."}
             except Exception as ee:
                 value = -1
-                print("cc" + ee)
                 return {"feature": "AnchorURL", "value": value, "reason": ee}
         except Exception as e:
             value = -1
