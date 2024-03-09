@@ -334,12 +334,11 @@ class FeatureExtraction:
         try:
             i, unsafe = 0, 0
             for a in self.soup.find_all('a', href=True):
-                if "#" in a['href'].lower() or "javascript" in a['href'].lower() or "mailto" in a['href'].lower() or not (
-                        self.url.lower() in a['href'].lower() or self.domain.lower() in a['href'].lower()):
+                if "#" in a['href'].lower() or "javascript" in a['href'].lower() or "mailto" in a['href'].lower() or not (self.url.lower() in a['href'].lower() or self.domain.lower() in a['href'].lower()):
                     unsafe = unsafe + 1
                 i = i + 1
             try:
-                if i != 0:
+                if unsafe != 0 and i != 0:
                     percentage = unsafe / float(i) * 100
                 else:
                     percentage = 0
