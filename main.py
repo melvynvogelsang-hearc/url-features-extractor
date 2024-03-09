@@ -332,6 +332,8 @@ class FeatureExtraction:
     # 14. AnchorURL
     def AnchorURL(self):
         try:
+            print(self.whois_response)
+            print(self.domain)
             i, unsafe = 0, 0
             for a in self.soup.find_all('a', href=True):
                 if "#" in a['href'].lower() or "javascript" in a['href'].lower() or "mailto" in a['href'].lower() or not (self.url.lower() in a['href'].lower() or self.domain.lower() in a['href'].lower()):
@@ -345,14 +347,14 @@ class FeatureExtraction:
 
                 if percentage < 31.0:
                     value = 1
-                    return {"feature": "AnchorURL", "value": value,"reason": str(percentage) + "% des liens ne sont pas sécurisés"}
+                    return {"feature": "AnchorURL", "value": value,"reason": str(percentage) + "% des liens ne sont pas sécurisés", "whois": self.whois_response}
                 elif ((percentage >= 31.0) and (percentage < 67.0)):
                     value = 0
-                    return {"feature": "AnchorURL", "value": value,"reason": str(percentage) + "% des liens ne sont pas sécurisés"}
+                    return {"feature": "AnchorURL", "value": value,"reason": str(percentage) + "% des liens ne sont pas sécurisés", "whois": self.whois_response}
 
                 else:
                     value = -1
-                    return {"feature": "AnchorURL", "value": value,"reason": str(percentage) + "% des liens ne sont pas sécurisés"}
+                    return {"feature": "AnchorURL", "value": value,"reason": str(percentage) + "% des liens ne sont pas sécurisés", "whois": self.whois_response}
 
             except Exception as ee:
                 value = -1
