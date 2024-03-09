@@ -178,6 +178,7 @@ class FeatureExtraction:
                 with context.wrap_socket(sock, server_hostname=hostname) as ssock:
                     if 'issuer' in ssock.getpeercert():
                         value = 1
+                        print(ssock.getpeercert())
                         return {"feature": "HTTPS", "value": value, "reason": "Certificat HTTPS valide"}
                     else:
                         if 'https' in urlparse(self.url).scheme:
