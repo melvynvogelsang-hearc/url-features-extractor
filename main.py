@@ -178,7 +178,6 @@ class FeatureExtraction:
                 with context.wrap_socket(sock, server_hostname=hostname) as ssock:
                     if 'issuer' in ssock.getpeercert():
                         value = 1
-                        print(ssock.getpeercert())
                         return {"feature": "HTTPS", "value": value, "reason": "Certificat HTTPS valide"}
                     else:
                         if 'https' in urlparse(self.url).scheme:
@@ -332,9 +331,8 @@ class FeatureExtraction:
 
     # 14. AnchorURL
     def AnchorURL(self):
+        print(self.whois_response)
         try:
-            print(self.whois_response)
-            print(self.domain)
             i, unsafe = 0, 0
             for a in self.soup.find_all('a', href=True):
                 if "#" in a['href'].lower() or "javascript" in a['href'].lower() or "mailto" in a['href'].lower() or not (self.url.lower() in a['href'].lower() or self.domain.lower() in a['href'].lower()):
