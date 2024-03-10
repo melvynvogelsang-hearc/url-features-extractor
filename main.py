@@ -691,14 +691,15 @@ class FeatureExtraction:
 
     def addToCSV(self, features_top_20):
         file = 'custom_urls.csv'
-
         features = []
         for f in self.features:
             if f['feature'] in features_top_20:
                 features.append(f['value'])
-        with open(file, mode='a', newline='', encoding='utf-8') as csvFile:
-            writer = csv.writer(csvFile)
-            writer.writerow(features)
+        return features
+        #with open(file, mode='a', newline='', encoding='utf-8') as csvFile:
+         #   writer = csv.writer(csvFile)
+          #  writer.writerow(features)
+
 
     def getFeaturesList(self):
         features_list = []  # Initialiser une liste pour stocker les caractéristiques filtrées
@@ -714,10 +715,10 @@ class FeatureExtraction:
                 }
                 features_list.append(obj)  # Ajouter le dictionnaire à la liste des caractéristiques
 
-        self.addToCSV(features_top_20)
+        forCSV = self.addToCSV(features_top_20)
         # Retourner le résultat final dans le format JSON attendu
         print(features_list)
-        return {'features': features_list}
+        return {'features': features_list, "forCSV": forCSV}
 
 
 def query(url):
