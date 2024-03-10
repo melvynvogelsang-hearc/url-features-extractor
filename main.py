@@ -692,9 +692,10 @@ class FeatureExtraction:
 
     def getFeaturesList(self):
         features_list = []  # Initialiser une liste pour stocker les caractéristiques filtrées
-        features_to_keep = ["IframeRedirection", "ShortURL", "Symbol@", "RequestURL", "InfoEmail", "StatusBarCust", "AgeofDomain", "Redirecting//", "StatsReport", "LinksPointingToPage", "HTTPS", "ServerFormHandler", "NonStdPort", "DisableRightClick", "Favicon", "UsingIP", "SubDomains", "DomainRegLen", "PrefixSuffix-", "AnchorURL", "UsingPopupWindow", "LinksInScriptTags", "AbnormalURL", "DNSRecording", "LongURL", "WebsiteForwarding"]
+        features_top_20 = ["HTTPS", "AnchorURL", "SubDomains", "PrefixSuffix-", "LinksInScriptTags", "RequestURL", "LinksPointingToPage", "ServerFormHandler", "AgeOfDomain", "UsingIP", "DNSRecording", "LongURL", "UsingPopupWindow", "InfoEmail", "Symbol@", "StatsReport", "WebsiteForwarding", "ShortURL", "AbnormalURL"]
+        # features_to_keep = ["IframeRedirection", "ShortURL", "Symbol@", "RequestURL", "InfoEmail", "StatusBarCust", "AgeofDomain", "Redirecting//", "StatsReport", "LinksPointingToPage", "HTTPS", "ServerFormHandler", "NonStdPort", "DisableRightClick", "Favicon", "UsingIP", "SubDomains", "DomainRegLen", "PrefixSuffix-", "AnchorURL", "UsingPopupWindow", "LinksInScriptTags", "AbnormalURL", "DNSRecording", "LongURL", "WebsiteForwarding"]
         for f in self.features:
-            if f['feature'] in features_to_keep:
+            if f['feature'] in features_top_20:
                 # Créer un dictionnaire pour la caractéristique actuelle en incluant 'name', 'value', et 'reason'
                 obj = {
                     'name': f['feature'],
