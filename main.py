@@ -325,7 +325,6 @@ class FeatureExtraction:
 
             except Exception as e:
                 value = 0
-                print(e)
                 return {"feature": "RequestURL", "value": value, "reason": "Exception"}
 
         except Exception as e:
@@ -334,7 +333,6 @@ class FeatureExtraction:
 
     # 14. AnchorURL
     def AnchorURL(self):
-        print(self.whois_response)
         try:
             # Ne pas inclure les link dans le head
             i, unsafe = 0, 0
@@ -364,7 +362,6 @@ class FeatureExtraction:
                 return {"feature": "AnchorURL", "value": value, "reason": str(ee)}
         except Exception as e:
             value = -1
-            print(e)
             return {"feature": "AnchorURL", "value": value, "reason": str(e)}
 
     # 15. LinksInScriptTags
@@ -406,7 +403,6 @@ class FeatureExtraction:
 
             except Exception as e:
                 value = 0
-                print(e)
                 return {"feature": "LinksInScriptTags", "value": value, "reason": str(e)}
 
         except Exception as e:
@@ -694,6 +690,7 @@ class FeatureExtraction:
 
     def addToCSV(self, features_top_20):
         file = 'custom_urls.csv'
+
         features = []
         for f in self.features:
             if f['feature'] in features_top_20:
@@ -718,6 +715,7 @@ class FeatureExtraction:
 
         self.addToCSV(features_top_20)
         # Retourner le résultat final dans le format JSON attendu
+        print(features_list)
         return {'features': features_list}
 
 
