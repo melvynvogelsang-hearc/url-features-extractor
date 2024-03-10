@@ -734,7 +734,7 @@ def get_features():
 
 @app.route('/', methods=['GET'])
 def get_root():
-    return jsonify({'data': 'Bienvenue!'})
+    return jsonify({'data': 'Bienvenue sur notre projet BI!'})
 
 
 if __name__ == '__main__':
