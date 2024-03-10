@@ -126,7 +126,7 @@
     createApp({
         data() {
             return {
-                urlField: 'https://kick.com/vita',
+                urlField: 'https://zzftssly.com',
                 isLoading: false,
                 showResult: false,
                 prediction: 0,
@@ -143,7 +143,6 @@
                 features.forEach((element) => {
                     objToReturn[element.name] = element.value
                 })
-                console.log(objToReturn)
                 return objToReturn
 
             },
@@ -155,9 +154,12 @@
             },
             verifyURL: function () {
                 const endpoint = "https://bi-phishing-api-d6fd210f47dd.herokuapp.com/"
-                const predictionEndpoint = "https://dataiku.hes-so.ch:8080/public/api/v1/model-deployed/v1/predict"
+                const predictionEndpoint = "https://dataiku.hes-so.ch:8080/public/api/v1/mode-optimized/v2/predict"
                 this.whoisError = false
                 this.isLoading = true
+                this.reasons = []
+                this.prediction = 0
+                this.proba = 0
 
                 // Create params
                 const params = new URLSearchParams();
@@ -170,31 +172,35 @@
                 axios.post(endpoint + 'get-features', params)
                     .then(response => {
                         // Create the predictions params
-
                         response.data.features.forEach((element) => {
                             this.reasons.push(element.reason)
                         })
 
                         // Check if whois is available
                         response.data.features.forEach((f) => {
-                            if (f.reason.includes('object has')){
+                            if (f.name === 'DNSRecording' && f.reason.includes('object has')){
                                 this.whoisError = true
                             }
                         })
 
-                        const data = {"features": this.formatAPIResponse(response.data)}
-                        this.formatAPIResponse(response.data)
-                        // Get the prediction
-                        axios.post(predictionEndpoint, data, headers)
-                            .then(predictionResponse => {
-                                const prediction = predictionResponse.data.result.prediction
-                                console.log(predictionResponse)
-                                this.prediction = prediction
-                                this.proba = predictionResponse.data.result.probas[-1]
-                                this.showResult = true
-                                // Reset fields
-                                this.isLoading = false
-                            })
+                        console.log(response.data)
+                        //console.log(JSON.stringify(response.data))
+                        //console.log(this.formatAPIResponse(response.data))
+
+                        if (!this.whoisError){
+                            const data = {"features": this.formatAPIResponse(response.data)}
+                            this.formatAPIResponse(response.data)
+                            // Get the prediction
+                            axios.post(predictionEndpoint, data, headers)
+                                .then(predictionResponse => {
+                                    const prediction = predictionResponse.data.result.prediction
+                                    this.prediction = prediction
+                                    this.proba = predictionResponse.data.result.probas[-1]
+                                    this.showResult = true
+                                    // Reset fields
+                                })
+                        }
+                        this.isLoading = false
                     })
                     .catch(error => {
                         console.error(error);

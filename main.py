@@ -5,6 +5,7 @@ import ssl
 import urllib.request
 from datetime import date
 from urllib.parse import urlparse
+import csv
 
 import requests
 import whois
@@ -18,8 +19,8 @@ CORS(app, origins=["https://melvynvogelsang.ch"])
 
 class FeatureExtraction:
     features = []
-
     def __init__(self, url):
+
         self.features = []
         self.url = url
         self.domain = ""
@@ -45,37 +46,39 @@ class FeatureExtraction:
         except:
             pass
 
-        self.features.append(self.UsingIp())
-        self.features.append(self.longUrl())
-        self.features.append(self.shortUrl())
-        self.features.append(self.symbol())
-        self.features.append(self.redirecting())
-        self.features.append(self.prefixSuffix())
-        self.features.append(self.SubDomains())
         self.features.append(self.Https())
-        self.features.append(self.DomainRegLen())
+        self.features.append(self.AnchorURL())
+        self.features.append(self.SubDomains())
+        self.features.append(self.prefixSuffix())
+        self.features.append(self.LinksInScriptTags())
+        self.features.append(self.RequestURL())
+        self.features.append(self.LinksPointingToPage())
+        self.features.append(self.ServerFormHandler())
+        self.features.append(self.AgeofDomain())
+        self.features.append(self.UsingIp())
+        self.features.append(self.DNSRecording())
+        self.features.append(self.longUrl())
+        self.features.append(self.UsingPopupWindow())
+        self.features.append(self.InfoEmail())
+        self.features.append(self.symbol())
+        self.features.append(self.StatsReport())
+        self.features.append(self.WebsiteForwarding())
+        self.features.append(self.shortUrl())
+        self.features.append(self.AbnormalURL())
+
         self.features.append(self.Favicon())
+        self.features.append(self.redirecting())
+        self.features.append(self.DomainRegLen())
 
         self.features.append(self.NonStdPort())
         self.features.append(self.HTTPSDomainURL())
-        self.features.append(self.RequestURL())
-        self.features.append(self.AnchorURL())
-        self.features.append(self.LinksInScriptTags())
-        self.features.append(self.ServerFormHandler())
-        self.features.append(self.InfoEmail())
-        self.features.append(self.AbnormalURL())
-        self.features.append(self.WebsiteForwarding())
+
         self.features.append(self.StatusBarCust())
 
         self.features.append(self.DisableRightClick())
-        self.features.append(self.UsingPopupWindow())
         self.features.append(self.IframeRedirection())
-        self.features.append(self.AgeofDomain())
-        self.features.append(self.DNSRecording())
         self.features.append(self.WebsiteTraffic())
         self.features.append(self.PageRank())
-        self.features.append(self.LinksPointingToPage())
-        self.features.append(self.StatsReport())
 
     # 1.UsingIp
     def UsingIp(self):
@@ -333,6 +336,7 @@ class FeatureExtraction:
     def AnchorURL(self):
         print(self.whois_response)
         try:
+            # Ne pas inclure les link dans le head
             i, unsafe = 0, 0
             for a in self.soup.find_all('a', href=True):
                 if "#" in a['href'].lower() or "javascript" in a['href'].lower() or "mailto" in a['href'].lower() or not (self.url.lower() in a['href'].lower() or self.domain.lower() in a['href'].lower()):
@@ -688,10 +692,20 @@ class FeatureExtraction:
             tuple = {"feature": "StatsReport", "value": value, "reason": str(e)}
             return tuple
 
+    def addToCSV(self, features_top_20):
+        file = 'custom_urls.csv'
+        features = []
+        for f in self.features:
+            if f['feature'] in features_top_20:
+                features.append(f['value'])
+        with open(file, mode='a', newline='', encoding='utf-8') as csvFile:
+            writer = csv.writer(csvFile)
+            writer.writerow(features)
+
     def getFeaturesList(self):
         features_list = []  # Initialiser une liste pour stocker les caractéristiques filtrées
-        features_top_20 = ["HTTPS", "AnchorURL", "SubDomains", "PrefixSuffix-", "LinksInScriptTags", "RequestURL", "LinksPointingToPage", "ServerFormHandler", "AgeOfDomain", "UsingIP", "DNSRecording", "LongURL", "UsingPopupWindow", "InfoEmail", "Symbol@", "StatsReport", "WebsiteForwarding", "ShortURL", "AbnormalURL"]
-        # features_to_keep = ["IframeRedirection", "ShortURL", "Symbol@", "RequestURL", "InfoEmail", "StatusBarCust", "AgeofDomain", "Redirecting//", "StatsReport", "LinksPointingToPage", "HTTPS", "ServerFormHandler", "NonStdPort", "DisableRightClick", "Favicon", "UsingIP", "SubDomains", "DomainRegLen", "PrefixSuffix-", "AnchorURL", "UsingPopupWindow", "LinksInScriptTags", "AbnormalURL", "DNSRecording", "LongURL", "WebsiteForwarding"]
+        features_top_20 = ["HTTPS", "AnchorURL", "SubDomains", "PrefixSuffix-", "LinksInScriptTags", "RequestURL", "LinksPointingToPage", "DomainRegLen", "ServerFormHandler", "AgeofDomain", "UsingIP", "DNSRecording", "LongURL", "UsingPopupWindow", "InfoEmail", "Symbol@", "StatsReport", "WebsiteForwarding", "ShortURL", "AbnormalURL"]
+
         for f in self.features:
             if f['feature'] in features_top_20:
                 # Créer un dictionnaire pour la caractéristique actuelle en incluant 'name', 'value', et 'reason'
@@ -702,6 +716,7 @@ class FeatureExtraction:
                 }
                 features_list.append(obj)  # Ajouter le dictionnaire à la liste des caractéristiques
 
+        self.addToCSV(features_top_20)
         # Retourner le résultat final dans le format JSON attendu
         return {'features': features_list}
 
